@@ -1,0 +1,268 @@
+{% extends "default/layout/layout.html" %}
+{% load static %}
+
+{% block title %} Material Handling, Industrial Supplies, Tools, Safety Equipment & More {% endblock %}
+{% block canonical_url %}{{request.scheme}}://{{request.META.HTTP_HOST}}{{request.path}}{% endblock %}
+
+{% block ld_json %}
+{{home_schema|safe}}
+{% endblock %}
+
+{% block content %}
+    <!-- hero area -->
+    <div class="main-content-wrapper d-flex clearfix">
+
+        <!-- Mobile Nav (max width 767px)-->
+        <div class="mobile-nav">
+            <!-- Navbar Brand -->
+            <div class="amado-navbar-toggler">
+                <span></span><span></span><span></span>
+            </div>
+            <div class="amado-navbar-brand" style="align-items: center;">
+                <a class="" href="index.html">
+                    <img src="img/logo/image.png" class="" alt="TechXchange Logo">
+                </a>
+            </div>
+            <!-- Navbar Toggler -->
+
+            <!-- My Account Dropdown -->
+            <div class="dropdown">
+                <a class="text-dark text-decoration-none dropdown-toggle" href="#" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-user"></i> My Account
+                </a>
+                <ul class="dropdown-menu custom-dropdown">
+                    <li><a class="dropdown-item" href="reg.html"><i class="fa fa-user-circle me-2"></i>Regstration</a>
+                    </li>
+                    <li><a class="dropdown-item" href="login.html"><i class="fa fa-user-circle me-2"></i>Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- Mobile Search Bar -->
+        <div class="search-bar mobile-search m-3">
+            <i class="fa fa-search text-muted"></i>
+            <input type="text" placeholder="Search product...">
+            <i class="fa fa-microphone text-muted"></i>
+        </div>
+        <!-- Header Area Start -->
+        <header class="header-area bg-light">
+            <!-- Close Icon -->
+            <div class="nav-close">
+                <i class="fa fa-close" aria-hidden="true"></i>
+            </div>
+            <!-- Logo -->
+            <!-- <div class="logo">
+                <a href="index.html"><img src="img/core-img/logo.png" alt=""></a>
+            </div> -->
+            <!-- Amado Nav -->
+            <nav class="amado-nav">
+                <ul>
+                    <li class="active"><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="add.html">Add Product</a></li>
+                </ul>
+            </nav>
+            <!-- Button Group -->
+            <div class="amado-btn-group mt-30 mb-100">
+                <a href="#" class="btn amado-btn mb-15">%Discount%</a>
+                <a href="#" class="btn amado-btn active">New this week</a>
+            </div>
+            <!-- Cart Menu -->
+            <div class="cart-fav-search mb-100">
+                <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
+                <a href="#top" class=""><img src="img/core-img/search.png" alt=""> Search</a>
+            </div>
+
+        </header>
+        <!-- Header Area End -->
+
+        <!-- Product Catagories Area Start -->
+        <div class="products-catagories-area clearfix">
+
+            <!-- Categories Section -->
+            <div class="m-4 amado-pro-catagory clearfix">
+
+                <!-- Single Category -->
+
+                <div class="single-products-catagory category-card clearfix">
+                    <a href="shop.html">
+                        <img src="img/index/best-selling.jpg" alt="">
+                        <!-- Hover Content -->
+                        <div class="hover-content">
+                            <h4>Best Selling</h4>
+                            <div class="line"></div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Single Catagory -->
+                <div class="single-products-catagory category-card clearfix">
+                    <a href="shop.html">
+                        <img src="img/index/macbooks.jpg" alt="">
+                        <!-- Hover Content -->
+                        <div class="hover-content">
+                            <h4>MacBooks</h4>
+                            <div class="line"></div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Single Catagory -->
+                <div class="single-products-catagory category-card clearfix">
+                    <a href="shop.html">
+                        <img src="img/index/laptops.webp" alt="">
+                        <!-- Hover Content -->
+                        <div class="hover-content">
+                            <h4>Laptops</h4>
+                            <div class="line"></div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Single Catagory -->
+                <div class="single-products-catagory category-card clearfix">
+                    <a href="shop.html">
+                        <img src="img/index/ipads.jpg" alt="">
+                        <!-- Hover Content -->
+                        <div class="hover-content">
+                            <h4>iPads</h4>
+                            <div class="line"></div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Single Catagory -->
+                <div class="single-products-catagory category-card clearfix">
+                    <a href="shop.html">
+                        <img src="img/index/tablets.jpg" alt="">
+                        <!-- Hover Content -->
+                        <div class="hover-content">
+                            <h4>Tablets</h4>
+                            <div class="line"></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Single Catagory -->
+                <div class="single-products-catagory category-card clearfix">
+                    <a href="shop.html">
+                        <img src="img/index/spare-parts.jpg" alt="">
+                        <!-- Hover Content -->
+                        <div class="hover-content">
+                            <h4>Spare Parts</h4>
+                            <div class="line"></div>
+                        </div>
+                    </a>
+                </div>
+                <div class="single-products-catagory category-card clearfix">
+                    <a href="shop.html">
+                        <img src="img/index/accessories.png" alt="">
+                        <!-- Hover Content -->
+                        <div class="hover-content">
+                            <h4>Accessories</h4>
+                            <div class="line"></div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Single Catagory -->
+                <div class="single-products-catagory category-card clearfix">
+                    <a href="shop.html">
+                        <img src="img/index/gaming.jpg" alt="">
+                        <!-- Hover Content -->
+                        <div class="hover-content">
+                            <h4>Gaming</h4>
+                            <div class="line"></div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Single Catagory -->
+                <div class="single-products-catagory category-card clearfix">
+                    <a href="shop.html">
+                        <img src="img/index/mobiles.jpg" alt="">
+                        <!-- Hover Content -->
+                        <div class="hover-content">
+                            <h4>Mobiles</h4>
+                            <div class="line"></div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Single Catagory -->
+                <!-- <div class="single-products-catagory category-card clearfix">
+                    <a href="shop.html">
+                        <img src="img/index/6.jpg" alt="">
+                        <div class="hover-content">
+                            <div class="line"></div>
+                            <p>From $320</p>
+                            <h4>Small Table</h4>
+                        </div>
+                    </a>
+                </div> -->
+
+            </div>
+            <!-- Product Catagories Area End -->
+        </div>
+
+        <!-- ##### Newsletter Area Start ##### -->
+        <div class="container mb-4 mt-4">
+            <h5 class="fw-bold text-center mb-4">PROMOTED CONTENT</h5>
+            <div class="row g-3">
+                <!-- First Banner -->
+                <div class="col-md-3 col-sm-6">
+                    <div class="card border-0 shadow-sm banner-card position-relative">
+                        <a href="#" class="text-decoration-none">
+                            <div class="card border-0 shadow-sm banner-card position-relative">
+                                <img src="img/laptops/laptop-3.png" class="card-img-top banner-img"
+                                    alt="Unsold Cars Clearance">
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <!-- Second Banner -->
+                <div class="col-md-3 col-sm-6">
+                    <div class="card border-0 shadow-sm banner-card position-relative">
+                        <a href="#" class="text-decoration-none">
+                            <div class="card border-0 shadow-sm banner-card position-relative">
+                                <img src="img/laptops/laptop-3.png" class="card-img-top banner-img"
+                                    alt="Unsold Cars Clearance">
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+                <!-- Third Banner -->
+                <div class="col-md-3 col-sm-6">
+                    <div class="card border-0 shadow-sm banner-card position-relative">
+                        <a href="#" class="text-decoration-none">
+                            <div class="card border-0 shadow-sm banner-card position-relative">
+                                <img src="img/laptops/laptop-3.png" class="card-img-top banner-img"
+                                    alt="Unsold Cars Clearance">
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+                <!-- Fourth Banner -->
+                <div class="col-md-3 col-sm-6">
+                    <div class="card border-0 shadow-sm banner-card position-relative">
+                        <a href="#" class="text-decoration-none">
+                            <div class="card border-0 shadow-sm banner-card position-relative">
+                                <img src="img/laptops/laptop-3.png" class="card-img-top banner-img"
+                                    alt="Unsold Cars Clearance">
+                                <!-- <div class="overlay">
+                                    <p class="card-text fw-semibold">Unsold Cars Clearance Of 2023 In Agra (Limited Time)</p>
+                                </div> -->
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ##### Newsletter Area End ##### -->
+    </div>
+    <!-- hero area end -->
+
+{% endblock content %}

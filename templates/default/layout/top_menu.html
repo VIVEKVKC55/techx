@@ -1,0 +1,28 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm desktop-nav">
+	<div class="container">
+		<a href="{% url 'home' %}"> <!-- Update this URL name to match your home view -->
+			<img src="{% static 'img/logo/image.png' %}" class="" alt="TechXchange Logo">
+		</a>
+		<!-- Search Bar -->
+		<form class="search-bar mx-3">
+			<i class="fa fa-search text-muted"></i>
+			<input type="text" placeholder="Search product...">
+			<i class="fa fa-microphone text-muted"></i>
+		</form>
+		<!-- Wishlist & Account -->
+		<div class="d-flex align-items-center">
+			<div id="google_translate_element"></div>
+			<div class="dropdown">
+				<a class="text-dark text-decoration-none dropdown-toggle" href="#" role="button"
+					data-bs-toggle="dropdown" aria-expanded="false">
+					<i class="fa fa-user"></i> My Account
+				</a>
+				<ul class="dropdown-menu custom-dropdown">
+					{% comment %} <li><a class="dropdown-item" href="{% url 'register' %}"><i class="fa fa-user-circle me-2"></i>Registration</a></li> {% endcomment %}
+					{% comment %} <li><a class="dropdown-item" href="{% url 'login' %}"><i class="fa fa-user-circle me-2"></i>Login</a></li> {% endcomment %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</nav>

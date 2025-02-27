@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}{% endblock %} Vivek Chauhan</title>
+
+        {% include "default/layout/head.html" %}
+
+        {% block extrastyle %}
+        {% endblock extrastyle %}
+
+        {% block ld_json %}
+        {% endblock ld_json %}
+
+        {{analytics.head|safe}}
+    </head>
+    <!-- END HEAD -->
+
+    <body>
+        {{analytics.body|safe}}
+
+        <div class="">
+            {% include "default/layout/top_menu.html" %}
+
+            {% block breadcrumb %}{% endblock breadcrumb %}
+
+            {% block content %}{% endblock content %}
+
+            {% include "default/layout/footer.html" %}
+        </div>
+
+        <!-- quickview-modal -->
+        {% comment %} <div id="quickview-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content"></div>
+            </div>
+        </div> {% endcomment %}
+        <!-- quickview-modal / end -->
+
+         <div class="loader-cont">
+            <div class='loading' style='transform:scale(0.79);'>
+                <img src="/static/loader.gif">
+            </div>
+        </div>
+
+        {% include "default/layout/javascript.html" %}
+
+        {% block extrajs %}
+        {% endblock extrajs %}
+    </body>
+</html>
