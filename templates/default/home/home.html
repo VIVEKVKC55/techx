@@ -98,63 +98,25 @@
             <!-- Product Catagories Area End -->
         </div>
 
-        <!-- ##### Newsletter Area Start ##### -->
+        <!-- ##### Promotion Area Start ##### -->
         <div class="container mb-4 mt-4">
-            <h5 class="fw-bold text-center mb-4">PROMOTED CONTENT</h5>
+            <h5 class="fw-bold text-center mb-4">Promotion Banners</h5>
             <div class="row g-3">
-                <!-- First Banner -->
+                {% for banner in promotion_banners %}
                 <div class="col-md-3 col-sm-6">
                     <div class="card border-0 shadow-sm banner-card position-relative">
-                        <a href="#" class="text-decoration-none">
+                        <a href="{{ banner.link }}" class="text-decoration-none">
                             <div class="card border-0 shadow-sm banner-card position-relative">
-                                <img src="img/laptops/laptop-3.png" class="card-img-top banner-img"
-                                    alt="Unsold Cars Clearance">
+                                <img src="{{banner.image.url}}" class="card-img-top banner-img"
+                                    alt="{{ banner.title }}">
                             </div>
                         </a>
                     </div>
                 </div>
-                <!-- Second Banner -->
-                <div class="col-md-3 col-sm-6">
-                    <div class="card border-0 shadow-sm banner-card position-relative">
-                        <a href="#" class="text-decoration-none">
-                            <div class="card border-0 shadow-sm banner-card position-relative">
-                                <img src="img/laptops/laptop-3.png" class="card-img-top banner-img"
-                                    alt="Unsold Cars Clearance">
-                            </div>
-                        </a>
-
-                    </div>
-                </div>
-                <!-- Third Banner -->
-                <div class="col-md-3 col-sm-6">
-                    <div class="card border-0 shadow-sm banner-card position-relative">
-                        <a href="#" class="text-decoration-none">
-                            <div class="card border-0 shadow-sm banner-card position-relative">
-                                <img src="img/laptops/laptop-3.png" class="card-img-top banner-img"
-                                    alt="Unsold Cars Clearance">
-                            </div>
-                        </a>
-
-                    </div>
-                </div>
-                <!-- Fourth Banner -->
-                <div class="col-md-3 col-sm-6">
-                    <div class="card border-0 shadow-sm banner-card position-relative">
-                        <a href="#" class="text-decoration-none">
-                            <div class="card border-0 shadow-sm banner-card position-relative">
-                                <img src="img/laptops/laptop-3.png" class="card-img-top banner-img"
-                                    alt="Unsold Cars Clearance">
-                                <!-- <div class="overlay">
-                                    <p class="card-text fw-semibold">Unsold Cars Clearance Of 2023 In Agra (Limited Time)</p>
-                                </div> -->
-                            </div>
-                        </a>
-
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
-        <!-- ##### Newsletter Area End ##### -->
+        <!-- ##### Promotion Area End ##### -->
     </div>
     <!-- hero area end -->
 
