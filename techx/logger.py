@@ -42,7 +42,7 @@ LOGGING = {
         'default': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'nation_pim.log'),
+            'filename': os.path.join(LOG_DIR, 'techx.log'),
             'formatter': 'standard',
             'maxBytes': 1024 * 1024 * 100,  # 100 mb
         },
