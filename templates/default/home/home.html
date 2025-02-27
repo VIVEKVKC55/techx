@@ -82,125 +82,18 @@
 
             <!-- Categories Section -->
             <div class="m-4 amado-pro-catagory clearfix">
-
-                <!-- Single Category -->
-
+                {% for catagory in categories %}
                 <div class="single-products-catagory category-card clearfix">
                     <a href="shop.html">
-                        <img src="img/index/best-selling.jpg" alt="">
+                        <img src="{{catagory.image_url.url}}" alt="{{ catagory.name }}">
                         <!-- Hover Content -->
                         <div class="hover-content">
-                            <h4>Best Selling</h4>
+                            <h4>{{ catagory.name }}</h4>
                             <div class="line"></div>
                         </div>
                     </a>
                 </div>
-
-                <!-- Single Catagory -->
-                <div class="single-products-catagory category-card clearfix">
-                    <a href="shop.html">
-                        <img src="img/index/macbooks.jpg" alt="">
-                        <!-- Hover Content -->
-                        <div class="hover-content">
-                            <h4>MacBooks</h4>
-                            <div class="line"></div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Single Catagory -->
-                <div class="single-products-catagory category-card clearfix">
-                    <a href="shop.html">
-                        <img src="img/index/laptops.webp" alt="">
-                        <!-- Hover Content -->
-                        <div class="hover-content">
-                            <h4>Laptops</h4>
-                            <div class="line"></div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Single Catagory -->
-                <div class="single-products-catagory category-card clearfix">
-                    <a href="shop.html">
-                        <img src="img/index/ipads.jpg" alt="">
-                        <!-- Hover Content -->
-                        <div class="hover-content">
-                            <h4>iPads</h4>
-                            <div class="line"></div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Single Catagory -->
-                <div class="single-products-catagory category-card clearfix">
-                    <a href="shop.html">
-                        <img src="img/index/tablets.jpg" alt="">
-                        <!-- Hover Content -->
-                        <div class="hover-content">
-                            <h4>Tablets</h4>
-                            <div class="line"></div>
-                        </div>
-                    </a>
-                </div>
-                <!-- Single Catagory -->
-                <div class="single-products-catagory category-card clearfix">
-                    <a href="shop.html">
-                        <img src="img/index/spare-parts.jpg" alt="">
-                        <!-- Hover Content -->
-                        <div class="hover-content">
-                            <h4>Spare Parts</h4>
-                            <div class="line"></div>
-                        </div>
-                    </a>
-                </div>
-                <div class="single-products-catagory category-card clearfix">
-                    <a href="shop.html">
-                        <img src="img/index/accessories.png" alt="">
-                        <!-- Hover Content -->
-                        <div class="hover-content">
-                            <h4>Accessories</h4>
-                            <div class="line"></div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Single Catagory -->
-                <div class="single-products-catagory category-card clearfix">
-                    <a href="shop.html">
-                        <img src="img/index/gaming.jpg" alt="">
-                        <!-- Hover Content -->
-                        <div class="hover-content">
-                            <h4>Gaming</h4>
-                            <div class="line"></div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Single Catagory -->
-                <div class="single-products-catagory category-card clearfix">
-                    <a href="shop.html">
-                        <img src="img/index/mobiles.jpg" alt="">
-                        <!-- Hover Content -->
-                        <div class="hover-content">
-                            <h4>Mobiles</h4>
-                            <div class="line"></div>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Single Catagory -->
-                <!-- <div class="single-products-catagory category-card clearfix">
-                    <a href="shop.html">
-                        <img src="img/index/6.jpg" alt="">
-                        <div class="hover-content">
-                            <div class="line"></div>
-                            <p>From $320</p>
-                            <h4>Small Table</h4>
-                        </div>
-                    </a>
-                </div> -->
-
+                {% endfor %}
             </div>
             <!-- Product Catagories Area End -->
         </div>
