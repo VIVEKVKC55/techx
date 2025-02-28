@@ -1,23 +1,18 @@
 {
     "builds": [
         {
-            "src": "techx/wsgi.py",
+            "src": "manage.py",
             "use": "@vercel/python",
             "config": {
                 "maxLambdaSize": "15mb",
-                "runtime": "python3.11.3"
+                "runtime": "python3.11"
             }
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "techx/wsgi.py"
+            "dest": "manage.py"
         }
-    ],
-    "buildCommand": "apt-get update && apt-get install -y default-libmysqlclient-dev && vercel build",
-    "env": {
-        "MYSQLCLIENT_CFLAGS": "-I/usr/include/mysql",
-        "MYSQLCLIENT_LDFLAGS": "-L/usr/lib/mysql -lmysqlclient"
-    }
+    ]
 }
