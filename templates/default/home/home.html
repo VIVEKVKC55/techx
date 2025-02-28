@@ -8,116 +8,79 @@
 {{home_schema|safe}}
 {% endblock %}
 
-{% block content %}
+{% block home_content %}
     <!-- hero area -->
-    <div class="main-content-wrapper d-flex clearfix">
+    <!-- Header Area Start -->
+    <header class="header-area bg-light">
+        <!-- Close Icon -->
+        <div class="nav-close">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </div>
+        <!-- Logo -->
+        <!-- <div class="logo">
+            <a href="index.html"><img src="img/core-img/logo.png" alt=""></a>
+        </div> -->
+        <!-- Amado Nav -->
+        <nav class="amado-nav">
+            <ul>
+                <li class="active"><a href="index.html">Home</a></li>
+                <li><a href="{% url "catalog:product_list" %}">Shop</a></li>
+                <li><a href="{% url "catalog:product_create" %}">Add Product</a></li>
+            </ul>
+        </nav>
+        <!-- Button Group -->
+        <div class="amado-btn-group mt-30 mb-100">
+            <a href="#" class="btn amado-btn mb-15">%Discount%</a>
+            <a href="#" class="btn amado-btn active">New this week</a>
+        </div>
+        <!-- Cart Menu -->
+        <div class="cart-fav-search mb-100">
+            <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
+            <a href="#top" class=""><img src="img/core-img/search.png" alt=""> Search</a>
+        </div>
 
-        <!-- Mobile Nav (max width 767px)-->
-        <div class="mobile-nav">
-            <!-- Navbar Brand -->
-            <div class="amado-navbar-toggler">
-                <span></span><span></span><span></span>
-            </div>
-            <div class="amado-navbar-brand" style="align-items: center;">
-                <a class="" href="index.html">
-                    <img src="img/logo/image.png" class="" alt="TechXchange Logo">
+    </header>
+    <!-- Header Area End -->
+
+    <!-- Product Catagories Area Start -->
+    <div class="products-catagories-area clearfix">
+
+        <!-- Categories Section -->
+        <div class="m-4 amado-pro-catagory clearfix">
+            {% for catagory in categories %}
+            <div class="single-products-catagory category-card clearfix">
+                <a href="shop.html">
+                    <img src="{{catagory.image_url.url}}" alt="{{ catagory.name }}">
+                    <!-- Hover Content -->
+                    <div class="hover-content">
+                        <h4>{{ catagory.name }}</h4>
+                        <div class="line"></div>
+                    </div>
                 </a>
             </div>
-            <!-- Navbar Toggler -->
-
-            <!-- My Account Dropdown -->
-            <div class="dropdown">
-                <a class="text-dark text-decoration-none dropdown-toggle" href="#" role="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fa fa-user"></i> My Account
-                </a>
-                <ul class="dropdown-menu custom-dropdown">
-                    <li><a class="dropdown-item" href="reg.html"><i class="fa fa-user-circle me-2"></i>Regstration</a>
-                    </li>
-                    <li><a class="dropdown-item" href="login.html"><i class="fa fa-user-circle me-2"></i>Login</a>
-                    </li>
-                </ul>
-            </div>
+            {% endfor %}
         </div>
-        <!-- Mobile Search Bar -->
-        <div class="search-bar mobile-search m-3">
-            <i class="fa fa-search text-muted"></i>
-            <input type="text" placeholder="Search product...">
-            <i class="fa fa-microphone text-muted"></i>
-        </div>
-        <!-- Header Area Start -->
-        <header class="header-area bg-light">
-            <!-- Close Icon -->
-            <div class="nav-close">
-                <i class="fa fa-close" aria-hidden="true"></i>
-            </div>
-            <!-- Logo -->
-            <!-- <div class="logo">
-                <a href="index.html"><img src="img/core-img/logo.png" alt=""></a>
-            </div> -->
-            <!-- Amado Nav -->
-            <nav class="amado-nav">
-                <ul>
-                    <li class="active"><a href="index.html">Home</a></li>
-                    <li><a href="{% url "catalog:product_list" %}">Shop</a></li>
-                    <li><a href="{% url "catalog:product_create" %}">Add Product</a></li>
-                </ul>
-            </nav>
-            <!-- Button Group -->
-            <div class="amado-btn-group mt-30 mb-100">
-                <a href="#" class="btn amado-btn mb-15">%Discount%</a>
-                <a href="#" class="btn amado-btn active">New this week</a>
-            </div>
-            <!-- Cart Menu -->
-            <div class="cart-fav-search mb-100">
-                <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
-                <a href="#top" class=""><img src="img/core-img/search.png" alt=""> Search</a>
-            </div>
+        <!-- Product Catagories Area End -->
+    </div>
 
-        </header>
-        <!-- Header Area End -->
-
-        <!-- Product Catagories Area Start -->
-        <div class="products-catagories-area clearfix">
-
-            <!-- Categories Section -->
-            <div class="m-4 amado-pro-catagory clearfix">
-                {% for catagory in categories %}
-                <div class="single-products-catagory category-card clearfix">
-                    <a href="shop.html">
-                        <img src="{{catagory.image_url.url}}" alt="{{ catagory.name }}">
-                        <!-- Hover Content -->
-                        <div class="hover-content">
-                            <h4>{{ catagory.name }}</h4>
-                            <div class="line"></div>
+    <!-- ##### Promotion Area Start ##### -->
+    <div class="container mb-4 mt-4">
+        <h5 class="fw-bold text-center mb-4">Promotion Banners</h5>
+        <div class="row g-3">
+            {% for banner in promotion_banners %}
+            <div class="col-md-3 col-sm-6">
+                <div class="card border-0 shadow-sm banner-card position-relative">
+                    <a href="{{ banner.link }}" class="text-decoration-none">
+                        <div class="card border-0 shadow-sm banner-card position-relative">
+                            <img src="{{banner.image.url}}" class="card-img-top banner-img"
+                                alt="{{ banner.title }}">
                         </div>
                     </a>
                 </div>
-                {% endfor %}
             </div>
-            <!-- Product Catagories Area End -->
+            {% endfor %}
         </div>
-
-        <!-- ##### Promotion Area Start ##### -->
-        <div class="container mb-4 mt-4">
-            <h5 class="fw-bold text-center mb-4">Promotion Banners</h5>
-            <div class="row g-3">
-                {% for banner in promotion_banners %}
-                <div class="col-md-3 col-sm-6">
-                    <div class="card border-0 shadow-sm banner-card position-relative">
-                        <a href="{{ banner.link }}" class="text-decoration-none">
-                            <div class="card border-0 shadow-sm banner-card position-relative">
-                                <img src="{{banner.image.url}}" class="card-img-top banner-img"
-                                    alt="{{ banner.title }}">
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        <!-- ##### Promotion Area End ##### -->
     </div>
+    <!-- ##### Promotion Area End ##### -->
     <!-- hero area end -->
-
-{% endblock content %}
+{% endblock home_content %}

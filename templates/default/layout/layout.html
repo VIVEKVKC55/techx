@@ -27,18 +27,22 @@
 
             {% block breadcrumb %}{% endblock breadcrumb %}
 
+            <div class="main-content-wrapper d-flex clearfix">
+
+                {% include "default/layout/mobile_nav.html" %}
+
+                {% comment %} {% include "default/layout/header.html" %} {% endcomment %}
+
+            
+                {% block home_content %}
+                {% endblock home_content %}
+
+            </div>
+
             {% block content %}{% endblock content %}
 
             {% include "default/layout/footer.html" %}
         </div>
-
-        <!-- quickview-modal -->
-        {% comment %} <div id="quickview-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-xl">
-                <div class="modal-content"></div>
-            </div>
-        </div> {% endcomment %}
-        <!-- quickview-modal / end -->
 
          <div class="loader-cont">
             <div class='loading' style='transform:scale(0.79);'>
