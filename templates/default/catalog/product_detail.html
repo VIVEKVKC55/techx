@@ -1,0 +1,232 @@
+{% extends "default/layout/layout.html" %}
+{% load static %}
+
+{% block title %} Material Handling, Industrial Supplies, Tools, Safety Equipment & More {% endblock %}
+{% block canonical_url %}{{request.scheme}}://{{request.META.HTTP_HOST}}{{request.path}}{% endblock %}
+{% block extrastyle %}
+<style>
+	/* Dropdown Item Hover */
+	.dropdown-item:hover {
+		background-color: #f8f9fa;
+	}
+
+	/* Custom dropdown button spacing */
+	.custom-dropdown {
+		min-width: 180px;
+	}
+
+	.search-bar {
+		background: #f0f1f3;
+		border: 1px solid #dc3545;
+		border-radius: 3px;
+		padding: 8px 15px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-left: 20px;
+		margin-right: 20px;
+		height: 50px;
+		width: 100%;
+	}
+
+	.search-bar input {
+		border: none;
+		background: transparent;
+		outline: none;
+		width: 100%;
+	}
+
+	/* Show only on mobile */
+	@media (min-width: 768px) {
+		.mobile-search {
+			display: none;
+		}
+	}
+
+	@media (max-width: 767px) {
+		.desktop-nav {
+			display: none !important;
+		}
+	}
+
+	.carousel-inner img {
+		height: 450px;
+		/* Adjust as needed */
+		object-fit: cover;
+	}
+
+	.custom-text-muted {
+		font-size: 9px;
+		/* Smaller location & time text */
+	}
+</style>
+<style>
+	/* Banner Styling */
+	.banner-container {
+		width: 100%;
+		height: 275px;
+		overflow: hidden;
+	}
+
+	/* Banner Image */
+	.banner-container img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		padding-left: 150px;
+		padding-right: 150px;
+	}
+
+	/* Hover Effect */
+	.banner-container a:hover img {
+		transform: scale(1.05);
+	}
+</style>
+{% endblock %}
+{% block ld_json %}
+{{home_schema|safe}}
+{% endblock %}
+
+{% block content %}
+<div class="main-content-wrapper d-flex clearfix">
+
+	<!-- Mobile Nav (max width 767px)-->
+	<div class="mobile-nav">
+		<!-- Navbar Brand -->
+		<div class="amado-navbar-toggler">
+			<span></span><span></span><span></span>
+		</div>
+		<div class="amado-navbar-brand" style="align-items: center;">
+			<a class="" href="index.html">
+				<img src="img/logo/image.png" class="" alt="TechXchange Logo">
+			</a>
+		</div>
+		<!-- Navbar Toggler -->
+
+		<!-- My Account Dropdown -->
+		<div class="dropdown">
+			<a class="text-dark text-decoration-none dropdown-toggle" href="#" role="button"
+				data-bs-toggle="dropdown" aria-expanded="false">
+				<i class="fa fa-user"></i> My Account
+			</a>
+			<ul class="dropdown-menu custom-dropdown">
+				<li><a class="dropdown-item" href="reg.html"><i class="fa fa-user-circle me-2"></i>Regstration</a>
+				</li>
+				<li><a class="dropdown-item" href="login.html"><i class="fa fa-user-circle me-2"></i>Login</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!-- Mobile Search Bar -->
+	<div class="search-bar mobile-search m-3">
+		<i class="fa fa-search text-muted"></i>
+		<input type="text" placeholder="Search product...">
+		<i class="fa fa-microphone text-muted"></i>
+	</div>
+	<!-- Header Area End -->
+</div>
+<div class="container mt-1">
+	<div class="card p-3 shadow-sm">
+		<!-- Banner -->
+		<div class="banner-container">
+			<a href="#" target="_blank"> <!-- Replace with your actual URL -->
+				<img src="img/baneers/baneer-1.png" alt="Festival Sale Banner">
+			</a>
+		</div>
+	</div>
+</div>
+<div class="container mt-4">
+	<div class="row">
+		<!-- Left Side: Image Gallery -->
+		<div class="col-md-8">
+			<div id="productCarousel" class="card p-3 shadow-sm carousel slide" data-bs-ride="carousel">
+				<!-- Main Image Display -->
+				<div class="carousel-inner">
+					{% for image in product.images %}
+					<div class="carousel-item {% if forloop.first %}active{% endif %}">
+						<img src="{{ image.image.url }}" class="d-block w-100 rounded" alt="{{ product.name }}-{{ forloop.counter }}">
+					</div>
+					{% endfor %}
+				</div>
+				<a class="carousel-control-prev" href="#productCarousel" role="button" data-bs-slide="prev">
+					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				</a>
+				<a class="carousel-control-next" href="#productCarousel" role="button" data-bs-slide="next">
+					<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				</a>
+			
+				<hr>
+			
+				<!-- Thumbnail Navigation -->
+				<div class="d-flex justify-content-center mt-3">
+					{% for image in product.images %}
+					<button type="button" data-bs-target="#productCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="mx-1 border-0 {% if forloop.first %}active{% endif %}">
+						<img src="{{ image.image.url }}" class="img-thumbnail" width="60" height="45" alt="{{ product.name }}-{{ forloop.counter }}">
+					</button>
+					{% endfor %}
+				</div>
+			</div>
+			<div class="card p-3 mb-2 shadow-sm">
+				<h5>Description</h5>
+				<p><strong>{{ product.name}}</strong></p>
+				<p>{{ product.specification}}</p>
+				<p>{{ product.description}}</p>
+
+			</div>
+
+		</div>
+
+		<!-- Right Side: Product Details -->
+		<div class="col-md-4">
+			<div class="card p-3 shadow-sm">
+				<!-- <h2 class="price">₹ 4,999</h2> -->
+				<p class="text-muted">{{ product.name}}</p>
+				<div class="d-flex justify-content-between custom-text-muted text-muted small mt-auto">
+					<span class="text-start">DHARAVI, MUMBAI</span>
+					<span class="text-end">{{ product.created_at|timesince }}</span>
+				</div>
+			</div>
+			<div class="card p-3 mt-2 shadow-sm">
+				<div class="d-flex align-items-center">
+					<img src="img/logo/seller-logo.png" alt="Seller Logo" class="rounded-circle me-3" width="50"
+						height="50">
+					<h5 class="mb-0">{{ product.created_by }}</h5>
+				</div>
+
+				<button class="btn btn-outline-dark w-100 mt-3">Chat with seller</button>
+
+				<div class="p-3 text-center d-flex align-items-center justify-content-center">
+					<div class="d-flex align-items-center justify-content-center">
+						<i class="fa fa-phone-alt me-2"></i>
+						<span id="hidden-number">** **** ****</span>
+						<a href="#" id="show-number-btn" class="ms-2 text-primary text-decoration-none fw-bold">Show
+							number</a>
+					</div>
+				</div>
+
+				<script>
+					document.getElementById("show-number-btn").addEventListener("click", function (event) {
+						event.preventDefault(); // Prevent page refresh
+						document.getElementById("hidden-number").textContent = "+91 98765 43210"; // Replace with actual number
+						this.style.display = "none"; // Hide the "Show number" button
+					});
+				</script>
+
+			</div>
+
+			<!-- Location Section -->
+			<div class="card mt-2 p-2 shadow-sm">
+				<h6 class="mb-0 text-muted">Posted in</h6>
+				<p class="mb-0 fw-bold">Dadar East, Mumbai, Maharashtra</p>
+			</div>
+			<div class="card p-3 mt-2 shadow-sm">
+				<iframe src="https://maps.google.com/maps?q=Chandpur,UP&t=&z=13&ie=UTF8&iwloc=&output=embed"
+					width="100%" height="200" style="border:0;" allowfullscreen></iframe>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+{% block extrajs %}
+
+{% endblock extrajs %}

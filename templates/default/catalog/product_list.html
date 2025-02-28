@@ -239,7 +239,7 @@
                     <!-- Product Card -->
                      {% for product in products %}
                     <div class="col-md-4 mb-4">
-                        <a href="product-details.html" class="text-decoration-none">
+                        <a href="{% url "catalog:product_detail" product.id %}" class="text-decoration-none">
                             <div class="product-card position-relative h-100">
                                 {% for image in product.images %}
                                     <img src="{{ image.image.url }}" class="img-fluid rounded" alt="Laptop">

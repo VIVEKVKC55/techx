@@ -1,4 +1,4 @@
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, DetailView
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -31,3 +31,16 @@ class ProductListView(ListView):
 
     def get_queryset(self):
         return Product.objects.filter(is_active=True)
+
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = "default/catalog/product_detail.html"
+    context_object_name = "product"
+
+    def get_queryset(self):
+        return Product.objects.filter(is_active=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
