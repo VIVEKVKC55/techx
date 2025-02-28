@@ -76,6 +76,10 @@ class Product(models.Model):
         blank=True
     )
 
+    def default_image(self):
+        """Returns all images related to this product."""
+        return self.product_images.all().first()
+    
     def images(self):
         """Returns all images related to this product."""
         return self.product_images.all()  

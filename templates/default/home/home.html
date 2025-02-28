@@ -24,7 +24,7 @@
         <nav class="amado-nav">
             <ul>
                 <li class="active"><a href="index.html">Home</a></li>
-                <li><a href="{% url "catalog:product_list" %}">Shop</a></li>
+                <li><a href="{% url "catalog:product_list" %}">All Products</a></li>
                 <li><a href="{% url "catalog:product_create" %}">Add Product</a></li>
             </ul>
         </nav>
@@ -35,8 +35,8 @@
         </div>
         <!-- Cart Menu -->
         <div class="cart-fav-search mb-100">
-            <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
-            <a href="#top" class=""><img src="img/core-img/search.png" alt=""> Search</a>
+            <a href="#" class="fav-nav"><img src="{% static 'img/core-img/favorites.png' %}" alt=""> Favourite</a>
+            <a href="#top" class=""><img src="{% static 'img/core-img/search.png' %}" alt=""> Search</a>
         </div>
 
     </header>
@@ -49,7 +49,7 @@
         <div class="m-4 amado-pro-catagory clearfix">
             {% for catagory in categories %}
             <div class="single-products-catagory category-card clearfix">
-                <a href="shop.html">
+                <a href="{% url "catalog:category_products" catagory.slug %}">
                     <img src="{{catagory.image_url.url}}" alt="{{ catagory.name }}">
                     <!-- Hover Content -->
                     <div class="hover-content">

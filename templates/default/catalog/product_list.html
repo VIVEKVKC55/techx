@@ -168,14 +168,17 @@
             <div class="col-md-9">
                 <div class="d-flex justify-content-between align-items-center">
                     {% comment %} <span>Showing results for <strong>"laptop"</strong> <span class="badge bg-success"></span></span> {% endcomment %}
-                    <div>
+                    {% if query %}
+                        <span>Showing results for <strong>{{ query }}</strong> <span class="badge bg-success"></span></span>
+                    {% endif %}
+                    {% comment %} <div>
                         <span class="">SORT BY</span>
                         <select class="form-select d-inline-block w-auto">
                             <option>Date Published</option>
                             <option>Price: Low to High</option>
                             <option>Price: High to Low</option>
                         </select>
-                    </div>
+                    </div> {% endcomment %}
                 </div>
                 <hr>
                 <div class="row">
@@ -184,9 +187,7 @@
                     <div class="col-md-4 mb-4">
                         <a href="{% url "catalog:product_detail" product.id %}" class="text-decoration-none">
                             <div class="product-card position-relative h-100">
-                                {% for image in product.images %}
-                                    <img src="{{ image.image.url }}" class="img-fluid rounded" alt="Laptop">
-                                 {% endfor %}
+                                <img src="{{ product.default_image.image.url }}" class="img-fluid rounded" alt="Laptop">
                                 <span class="wishlist-icon position-absolute top-0 end-0 m-2">
                                     <i class="fa fa-heart"></i>
                                 </span>
