@@ -97,6 +97,9 @@
             display: none !important;
         }
     }
+    .fw-bold {
+        color: #dc3545 !important;
+    }
 </style>
 <style>
     /* Banner Styling */
@@ -142,34 +145,38 @@
             <!-- Sidebar Filters -->
             <div class="col-md-3">
                 <div class="card p-3">
-                    <h4>Laptop in India</h4>
                     <div class="filter-section">
-                        <h6>Categories</h6>
-                        <p><a href="#" class="text-dark text-decoration-none">All Categories</a></p>
+                        <p>
+                            <a href="{% url 'catalog:product_list' %}" class="text-dark text-decoration-none {% if not selected_category %}fw-bold{% endif %}">
+                                All Categories
+                            </a>
+                        </p>
+                        {% for category in categories %}
+                            <p>
+                                <a href="{% url 'catalog:product_list' %}?category={{ category.slug }}" class="text-dark text-decoration-none {% if selected_category|slugify == category.slug|slugify %}fw-bold text-denger{% endif %}">
+                                    {{ category.name }}
+                                </a>
+                            </p>
+                        {% endfor %}
                     </div>
-
-                    <div class="filter-section mt-3">
-                        <h6>Locations</h6>
-                        <p><a href="#" class="text-dark text-decoration-none">All Locations</a></p>
-                    </div>
-
-                    <div class="filter-section mt-3">
+                    {% comment %} <div class="filter-section mt-3">
                         <h6>Budget</h6>
                         <div class="d-flex">
                             <input type="number" class="form-control me-2" placeholder="min">
                             <input type="number" class="form-control me-2" placeholder="max">
                             <button class="btn btn-primary">Apply</button>
                         </div>
-                    </div>
+                    </div> {% endcomment %}
                 </div>
             </div>
 
             <!-- Product Listings -->
             <div class="col-md-9">
                 <div class="d-flex justify-content-between align-items-center">
-                    {% comment %} <span>Showing results for <strong>"laptop"</strong> <span class="badge bg-success"></span></span> {% endcomment %}
                     {% if query %}
                         <span>Showing results for <strong>{{ query }}</strong> <span class="badge bg-success"></span></span>
+                    {% elif category %}
+                        <span>Showing results for <strong>{{ category }}</strong> <span class="badge bg-success"></span></span>
                     {% endif %}
                     {% comment %} <div>
                         <span class="">SORT BY</span>
@@ -199,6 +206,8 @@
                             </div>
                         </a>
                     </div>
+                    {% empty %}
+                    <p class="text-center">Results not found for {{category}}{{ query }}.</p>
                     {% endfor %}
                 </div>
             </div>

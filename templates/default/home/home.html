@@ -49,7 +49,7 @@
         <div class="m-4 amado-pro-catagory clearfix">
             {% for catagory in categories %}
             <div class="single-products-catagory category-card clearfix">
-                <a href="{% url "catalog:category_products" catagory.slug %}">
+                <a href="{% url 'catalog:product_list' %}?category={{ catagory.slug }}">
                     <img src="{{catagory.image_url.url}}" alt="{{ catagory.name }}">
                     <!-- Hover Content -->
                     <div class="hover-content">
