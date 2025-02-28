@@ -9,7 +9,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import get_user_model
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.hashers import make_password
 
@@ -57,7 +57,10 @@ def user_login(request):
         if user is not None:
             login(request, user)
             messages.success(request, "Login successful!")
-            return redirect("home")
+
+            # Check if there is a 'next' parameter, otherwise default to home
+            next_url = request.GET.get('next', reverse_lazy('home:home'))
+            return redirect(next_url)  # Redirect to the original page or home
         else:
             messages.error(request, "Invalid username or password")
 
