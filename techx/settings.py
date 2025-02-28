@@ -12,15 +12,15 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
-from .logger import LOGGING
-from logging.config import dictConfig
 from dotenv import load_dotenv
 import pymysql
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 pymysql.install_as_MySQLdb()
+from .logger import LOGGING
 
+LOGGING['handlers']['file']['filename'] = "/tmp/logs/django.log"  # ✅ Use writable location
 # Load environment variables
 load_dotenv()
 
@@ -162,6 +162,3 @@ ADMIN_EMAIL = os.getenv('EMAIL_HOST_USER')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Logging
-dictConfig(LOGGING)
