@@ -48,3 +48,45 @@ class Category(models.Model):
 
     class Meta:
         db_table = 'category'
+
+
+class Product(models.Model):
+    name = models.CharField(max_length=255)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    brand = models.CharField(max_length=255)
+    specification = models.TextField()
+    description = models.TextField()
+    is_active = models.BooleanField(default=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="products_created",
+        db_column="created_by"  # Remove null=True, blank=True
+    )
+
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name="products_updated",
+        db_column="updated_by",
+        null=True,
+        blank=True
+    )
+
+    def images(self):
+        """Returns all images related to this product."""
+        return self.product_images.all()  
+
+    def __str__(self):
+        return self.name
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_images")
+    image = CloudinaryField('product_images', null=True, blank=True)
+
+    def __str__(self):
+        return f"Image for {self.product.name}"

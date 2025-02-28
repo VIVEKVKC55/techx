@@ -59,8 +59,8 @@
             <nav class="amado-nav">
                 <ul>
                     <li class="active"><a href="index.html">Home</a></li>
-                    <li><a href="shop.html">Shop</a></li>
-                    <li><a href="add.html">Add Product</a></li>
+                    <li><a href="{% url "catalog:product_list" %}">Shop</a></li>
+                    <li><a href="{% url "catalog:product_create" %}">Add Product</a></li>
                 </ul>
             </nav>
             <!-- Button Group -->
