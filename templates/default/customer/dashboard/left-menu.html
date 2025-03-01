@@ -1,0 +1,40 @@
+    
+{% load static %}
+<!-- Header Area Start -->
+<header class="header-area bg-light">
+    <!-- Close Icon -->
+    <div class="nav-close">
+        <i class="fa fa-close" aria-hidden="true"></i>
+    </div>
+    <div>
+        Dashboard
+    </div>
+    <nav class="amado-nav">
+        <ul>
+            <ul class="nav">
+                <li class="{% if page == 'profile' %}active{% endif %}">
+                    <a href="#">Profile</a>
+                </li>
+                <li class="{% if request.path == '/accounts/products/' %}active{% endif %}">
+                    <a href="{% url 'user:user-products' %}">All Products</a>
+                </li>
+                <li class="{% if request.path == '/catalog/product/create/' %}active{% endif %}">
+                    <a href="{% url 'catalog:product_create' %}">Add Product</a>
+                </li>
+                <li class="{% if request.path == '/catalog/products/change/' %}active{% endif %}">
+                    <a href="#">Change Products</a>
+                </li>
+                <li class="{% if request.path == '/catalog/products/delete/' %}active{% endif %}">
+                    <a href="#">Delete Products</a>
+                </li>
+                <li class="{% if request.path == '/account/change-password/' %}active{% endif %}">
+                    <a href="#">Change Password</a>
+                </li>
+                <li class="{% if request.path == '/account/plan-upgrade/' %}active{% endif %}">
+                    <a href="#">Plan Upgrade</a>
+                </li>
+            </ul>            
+        </ul>
+    </nav>
+</header>
+<!-- Header Area End -->

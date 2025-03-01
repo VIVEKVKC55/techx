@@ -5,24 +5,40 @@ from django.urls import reverse_lazy
 from .models import Category, Product, ProductImage
 from .forms import ProductForm
 from django.db.models import Q
+from django.contrib import messages
+from django.utils.timezone import now, timedelta
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     template_name = "default/catalog/product_form.html"
-    success_url = reverse_lazy("product_list")  # Update with the actual URL name
+    success_url = reverse_lazy("user:user-products")  # Update with the actual URL name
 
     def form_valid(self, form):
+        user = self.request.user
+        time_threshold = now() - timedelta(hours=24)
+        recent_product_count = Product.objects.filter(created_by=user, created_at__gte=time_threshold).count()
+
+        if recent_product_count >= 2:
+            messages.error(
+                self.request, 
+                "You can only add 2 products within 24 hours. "
+                "If you want to add more products, please delete an old product or purchase subscription."
+            )
+            return redirect(self.request.path)  # Redirect to the same page to show the error
+
+        # Save product with logged-in user
         product = form.save(commit=False)
-        product.created_by = self.request.user  # Automatically assign the logged-in user
+        product.created_by = user
         product.save()
         
         # Handling multiple images
         images = self.request.FILES.getlist("images")
         for image in images:
             ProductImage.objects.create(product=product, image=image)
-        
+
+        messages.success(self.request, "Product added successfully!")
         return redirect(self.success_url)
 
 

@@ -68,7 +68,16 @@
     <div class="card custom-card">
         <!-- Welcome Text -->
         <h2 class="fw-bold text-center">Add Product Page</h2>
-
+        {% if messages %}
+            <div id="messagePopup" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show text-center" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <!-- Custom Image Upload Box -->
@@ -160,6 +169,18 @@
             document.getElementById("uploadLabel").style.display = "flex"; // Show upload label
             document.getElementById("imagePreview").innerHTML = ""; // Clear preview
             document.getElementById("removeImage").style.display = "none"; // Hide remove button
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const messagePopup = document.getElementById("messagePopup");
+    
+            // Auto-hide the alert after 3 seconds
+            if (messagePopup) {
+                setTimeout(function () {
+                    messagePopup.style.display = "none";
+                }, 6000);
+            }
         });
     </script>
 </body>

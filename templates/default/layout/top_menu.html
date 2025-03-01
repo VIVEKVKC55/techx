@@ -22,6 +22,7 @@
 				</a>
 				<ul class="dropdown-menu custom-dropdown">
 					{% if user.is_authenticated %}
+					<li><a class="dropdown-item" href="{% url 'user:profile' %}"><i class="fa fa-user-circle me-2"></i>Profile</a></li>
 					<li><a class="dropdown-item" href="{% url 'user:logout' %}"><i class="fa fa-user-circle me-2"></i>Logout</a></li>
 					{% else %}
 					<li><a class="dropdown-item" href="{% url 'user:register' %}"><i class="fa fa-user-circle me-2"></i>Registration</a></li>
