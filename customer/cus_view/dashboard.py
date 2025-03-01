@@ -1,7 +1,9 @@
 from django.views.generic import TemplateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from catalog.models import Product
-
+from django.contrib.auth.views import PasswordChangeView
+from django.urls import reverse_lazy
+from django.contrib.messages.views import SuccessMessageMixin
 
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "default/customer/dashboard/profile.html"
@@ -19,3 +21,8 @@ class UserProductListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Product.objects.filter(created_by=self.request.user)
+
+class CustomPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
+    template_name = "default/customer/dashboard/change_password.html"  # Update with your template path
+    success_url = reverse_lazy("user:profile")  # Redirect to profile page after password change
+    success_message = "Your password has been successfully updated!"

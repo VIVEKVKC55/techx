@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import register, user_login, user_logout,forgot_password_request,reset_password
-from .cus_view.dashboard import ProfileView, UserProductListView
+from .cus_view.dashboard import ProfileView, UserProductListView, CustomPasswordChangeView
+
 
 app_name="user"
 
@@ -12,5 +13,6 @@ urlpatterns = [
     path("reset-password/<uidb64>/<token>/", reset_password, name="reset_password"),
     path("profile/", ProfileView.as_view(), name="profile"),
     path("user-products/", UserProductListView.as_view(), name="user-products"),
+    path("change-password/", CustomPasswordChangeView.as_view(), name="change-password"),
 ]
 
