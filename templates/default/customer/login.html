@@ -8,49 +8,6 @@
     <!-- CSS Files -->
     <link rel="stylesheet" href="{% static 'css/core-style.css' %}">
     <link rel="stylesheet" href="{% static 'style.css' %}">
-    <style>
-        .custom-card {
-            max-width: 500px;
-            width: 96%;
-            margin: auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 15px;
-            padding: 30px;
-        }
-
-        .form-control {
-            height: 45px;
-            border-radius: 10px;
-        }
-
-        .btn-login {
-            background-color: #e63946;
-            color: white;
-            border-radius: 10px;
-            height: 45px;
-        }
-
-        .btn-login:hover {
-            background-color: #d62839;
-        }
-
-        .social-icons a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: 1px solid #e63946;
-            font-size: 20px;
-            color: black;
-        }
-
-        .social-icons a:hover {
-            background-color: #e63946;
-            color: white;
-        }
-    </style>
 </head>
 
 <body class="d-flex align-items-center vh-100 bg-light">
@@ -59,11 +16,16 @@
         <!-- Welcome Text -->
         <h2 class="fw-bold text-center">Welcome Back!</h2>
         {% if messages %}
-        {% for message in messages %}
-            <p style="color:red;">{{ message }}</p>
-        {% endfor %}
+            <div id="messagePopup" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show text-center" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
-        <form method="post" class="mt-4">
+        <form method="post" class="mt-4" id="loginForm">
             {% csrf_token %}
             <div class="mb-3">
                 <div class="input-group">
@@ -83,10 +45,17 @@
             </div>
 
             <div class="text-end">
-                <a href="{% url "user:forgot_password" %}" class="text-danger text-decoration-none">Forgot Password?</a>
+                <a href="{% url 'user:forgot_password' %}" class="text-danger text-decoration-none">Forgot Password?</a>
             </div>
-
-            <button type="submit" class="btn btn-login w-100 mt-3">Login</button>
+        
+            <!-- Loader (Initially Hidden) -->
+            <div id="loader" class="loader-cont text-center" style="display: none;">
+                <div class='loading' style='transform:scale(0.79);'>
+                    <img src="{% static 'loader.gif' %}" alt="Loading...">
+                </div>
+            </div>
+        
+            <button type="submit" class="btn btn-danger w-100 mt-3" id="loginButton">Login</button>
         </form>
 
         <!-- Social Login -->
@@ -107,16 +76,35 @@
         document.addEventListener("DOMContentLoaded", function () {
             const togglePassword = document.getElementById("togglePassword");
             const passwordInput = document.getElementById("passwordInput");
-
+            const loginForm = document.getElementById("loginForm");
+            const loginButton = document.getElementById("loginButton");
+            const loader = document.getElementById("loader");
+    
+            // Toggle password visibility
             togglePassword.addEventListener("click", function () {
-                // Toggle password visibility
                 const type = passwordInput.type === "password" ? "text" : "password";
                 passwordInput.type = type;
-
-                // Toggle icon class
                 this.classList.toggle("fa-eye");
                 this.classList.toggle("fa-eye-slash");
             });
+    
+            // Show loader when submitting the form
+            loginForm.addEventListener("submit", function () {
+                loginButton.disabled = true; // Disable button to prevent multiple clicks
+                // loader.style.display = "block";
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const messagePopup = document.getElementById("messagePopup");
+    
+            // Auto-hide the alert after 3 seconds
+            if (messagePopup) {
+                setTimeout(function () {
+                    messagePopup.style.display = "none";
+                }, 2000);
+            }
         });
     </script>
     <!-- JavaScript Files -->

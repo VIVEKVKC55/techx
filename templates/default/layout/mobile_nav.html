@@ -6,11 +6,12 @@
         <span></span><span></span><span></span>
     </div>
     <div class="amado-navbar-brand" style="align-items: center;">
-        <a class="" href="index.html">
-            <img src="img/logo/image.png" class="" alt="TechXchange Logo">
+        <a class="" href="{% url 'home:home' %}">
+            <img src="{% static 'img/logo/image.png' %}" class="" alt="TechXchange Logo">
         </a>
     </div>
     <!-- Navbar Toggler -->
+	<div id="google_translate_element"></div>
 
     <!-- My Account Dropdown -->
     <div class="dropdown">
@@ -19,10 +20,12 @@
             <i class="fa fa-user"></i> My Account
         </a>
         <ul class="dropdown-menu custom-dropdown">
-            <li><a class="dropdown-item" href="reg.html"><i class="fa fa-user-circle me-2"></i>Regstration</a>
-            </li>
-            <li><a class="dropdown-item" href="login.html"><i class="fa fa-user-circle me-2"></i>Login</a>
-            </li>
+            {% if user.is_authenticated %}
+            <li><a class="dropdown-item" href="{% url 'user:logout' %}"><i class="fa fa-user-circle me-2"></i>Logout</a></li>
+            {% else %}
+            <li><a class="dropdown-item" href="{% url 'user:register' %}"><i class="fa fa-user-circle me-2"></i>Registration</a></li>
+            <li><a class="dropdown-item" href="{% url 'user:login' %}"><i class="fa fa-user-circle me-2"></i>Login</a></li>
+            {% endif %}
         </ul>
     </div>
 </div>

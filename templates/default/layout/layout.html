@@ -44,11 +44,22 @@
             {% include "default/layout/footer.html" %}
         </div>
 
-         <div class="loader-cont">
+        <div class="loader-cont">
             <div class='loading' style='transform:scale(0.79);'>
-                <img src="/static/loader.gif">
+                <img src={% static "loader.gif" %}>
             </div>
         </div>
+
+        {% if messages %}
+            <div id="messagePopup" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show text-center" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
 
         {% include "default/layout/javascript.html" %}
 

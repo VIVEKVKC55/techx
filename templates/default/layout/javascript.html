@@ -21,5 +21,17 @@
         }, 'google_translate_element');
     }
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const messagePopup = document.getElementById("messagePopup");
+
+        // Auto-hide the alert after 3 seconds
+        if (messagePopup) {
+            setTimeout(function () {
+                messagePopup.style.display = "none";
+            }, 2000);
+        }
+    });
+</script>
 <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 <!-- ##### All Javascript Files ##### -->

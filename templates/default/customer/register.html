@@ -8,71 +8,6 @@
     <title>Create Account</title>
     <link rel="stylesheet" href="{% static 'css/core-style.css' %}">
     <link rel="stylesheet" href="{% static 'style.css' %}">
-    <style>
-        .custom-card {
-            max-width: 500px;
-            width: 96%;
-            margin: auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 15px;
-            padding: 30px;
-        }
-
-        /* Input & Form Controls */
-        .form-control {
-            height: 50px;
-            border-radius: 10px;
-        }
-
-        /* Button Styling */
-        .btn-register {
-            background-color: #e63946;
-            color: white;
-            border-radius: 10px;
-            width: 100%;
-        }
-
-        .btn-register:hover {
-            background-color: #d62839;
-        }
-
-        /* Social Login Icons */
-        .social-icons a {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 1px solid #e63946;
-            font-size: 22px;
-            color: black;
-        }
-
-        .social-icons a:hover {
-            background-color: #e63946;
-            color: white;
-        }
-
-        /* Responsive Search Bar */
-        .search-bar {
-            background: #f8f9fa;
-            border-radius: 25px;
-            padding: 8px 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .search-bar input {
-            border: none;
-            background: transparent;
-            outline: none;
-            width: 100%;
-        }
-    </style>
 </head>
 
 <body class="d-flex align-items-center vh-100 bg-light">
@@ -81,9 +16,14 @@
         <!-- Welcome Text -->
         <h2 class="fw-bold text-center">Create an Account</h2>
         {% if messages %}
-        {% for message in messages %}
-            <p style="color:red;">{{ message }}</p>
-        {% endfor %}
+            <div id="messagePopup" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show text-center" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
         <form method="post" class="mt-4">
             {% csrf_token %}
@@ -112,7 +52,7 @@
             </div>
 
             <!-- Register Button -->
-            <button type="submit" class="btn btn-danger w-100">Create Account</button>
+            <button type="submit" class="btn btn-danger w-100 mt-3">Create Account</button>
         </form>
 
         <!-- Social Login -->
@@ -129,7 +69,18 @@
         <p class="text-center mt-3">Already have an account? <a href="{% url "user:login" %}" class="text-danger fw-bold">Login</a>
         </p>
     </div>
-
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const messagePopup = document.getElementById("messagePopup");
+    
+            // Auto-hide the alert after 3 seconds
+            if (messagePopup) {
+                setTimeout(function () {
+                    messagePopup.style.display = "none";
+                }, 2000);
+            }
+        });
+    </script>
     <!-- Bootstrap js -->
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
 </body>
