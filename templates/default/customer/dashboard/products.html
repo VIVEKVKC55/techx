@@ -33,7 +33,7 @@
                             {% for product in products %}
                             <tr>
                                 <td>{{ product.id }}</td>
-                                <td><a href="{% url 'catalog:product_detail' product.id %}">{{ product.name|capfirst }}</a></td>
+                                <td><a href="{% url 'catalog:product_detail' cat_slug=product.category.slug pk=product.pk %}">{{ product.name|capfirst }}</a></td>
                                 <td>{{ product.category }}</td>
                                 <td>{{ product.brand }}</td>
                                 {% comment %} <td>${{ product.price }}</td> {% endcomment %}

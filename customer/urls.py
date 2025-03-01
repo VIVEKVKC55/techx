@@ -11,6 +11,6 @@ urlpatterns = [
     path("forgot-password/", forgot_password_request, name="forgot_password"),
     path("reset-password/<uidb64>/<token>/", reset_password, name="reset_password"),
     path("profile/", ProfileView.as_view(), name="profile"),
-    path("products/", UserProductListView.as_view(), name="user-products"),
+    path("user-products/", UserProductListView.as_view(), name="user-products"),
 ]
 

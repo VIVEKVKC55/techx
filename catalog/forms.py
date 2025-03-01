@@ -18,7 +18,7 @@ class ProductForm(forms.ModelForm):
         fields = ['name', 'category', 'brand', 'specification', 'description', 'images']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Product Name'}),
-            'category': forms.Select(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
             'brand': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Product Brand'}),
             'specification': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Product Specification'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Product Description'}),

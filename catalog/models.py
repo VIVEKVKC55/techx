@@ -53,6 +53,7 @@ class Category(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=255)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    # slug = models.SlugField(max_length=250, unique=True, blank=True)
     brand = models.CharField(max_length=255)
     specification = models.TextField()
     description = models.TextField()
@@ -75,6 +76,17 @@ class Product(models.Model):
         null=True,
         blank=True
     )
+    # def save(self, *args, **kwargs):
+    #     """Automatically generate a unique slug from the name."""
+    #     if not self.slug:  # If slug is empty, generate from name
+    #         base_slug = slugify(self.name)
+    #         slug = base_slug
+    #         count = 1
+    #         while Product.objects.filter(slug=slug).exists():
+    #             slug = f"{base_slug}-{count}"
+    #             count += 1
+    #         self.slug = slug
+    #     super().save(*args, **kwargs)
 
     def default_image(self):
         """Returns all images related to this product."""

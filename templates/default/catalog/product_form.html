@@ -1,188 +1,196 @@
+{% extends "default/layout/layout.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Add Product Page</title>
-    <link rel="stylesheet" href="{% static 'css/core-style.css' %}">
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+{% block title %} Account Dashboard {% endblock %}
+{% block canonical_url %}{{request.scheme}}://{{request.META.HTTP_HOST}}{{request.path}}{% endblock %}
+
+{% block ld_json %}
+{{home_schema|safe}}
+{% endblock %}
+{% block extrastyle %}
+<style>
+    .image-upload {
+        height: 150px;
+        border: 2px dashed #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .image-upload-box {
+        width: 100%;
+        max-width: 400px;
+        height: 150px;
+        border: 2px dashed #d3d3d3;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 10px auto;
+        cursor: pointer;
+    }
     
-    <style>
-        .image-upload {
-            height: 150px;
-            border: 2px dashed #ccc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    .upload-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #999;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    
+    .upload-area i {
+        font-size: 40px;
+        margin-bottom: 5px;
+    }
+    
+    .image-upload-box:hover {
+        border-color: #ff4d4d;
+        color: #ff4d4d;
+    }
+    
+    #imagePreview img {
+        max-width: 100px;
+        height: auto;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        padding: 3px;
+    }
+    
+    
+</style>
+{% endblock extrastyle %}
+{% block home_content %}
 
-        .image-upload-box {
-            width: 100%;
-            max-width: 400px;
-            height: 150px;
-            border: 2px dashed #d3d3d3;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 10px auto;
-            cursor: pointer;
-        }
-        
-        .upload-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #999;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        
-        .upload-area i {
-            font-size: 40px;
-            margin-bottom: 5px;
-        }
-        
-        .image-upload-box:hover {
-            border-color: #ff4d4d;
-            color: #ff4d4d;
-        }
-        
-        #imagePreview img {
-            max-width: 100px;
-            height: auto;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            padding: 3px;
-        }
-        
-        
-    </style>
-</head>
+    <!-- hero area -->
+    {% include "default/customer/dashboard/left-menu.html" %}
 
-<body class="d-flex align-items-center vh-100 bg-light">
-
-    <div class="card custom-card">
-        <!-- Welcome Text -->
-        <h2 class="fw-bold text-center">Add Product Page</h2>
-        {% if messages %}
-            <div id="messagePopup" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
-                {% for message in messages %}
-                    <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show text-center" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="products-catagories-area clearfix">
+        <div class="container mt-4 mb-4">
+            <h2 class="mb-4">Add Product Page</h2>
+            <div class="card shadow-lg border-0 rounded-4 p-3">
+                {% if messages %}
+                    <div id="messagePopup" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+                        {% for message in messages %}
+                            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show text-center" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <!-- Custom Image Upload Box -->
-            <div class="image-upload-box text-center mb-3">
-                <label for="imageUpload" class="upload-area" id="uploadLabel">
-                    <i class="fa fa-camera fa-2x"></i>
-                    <p>Upload Image</p>
-                </label>
-            
-                <input type="file" id="imageUpload" name="images" accept="image/*" hidden>  
-                <div id="imagePreview" class="mt-2"></div> <!-- Image preview section -->
-                
-                <!-- Remove Button (Initially Hidden) -->
-                <button type="button" id="removeImage" class="btn btn-danger btn-sm mt-2" style="display: none;">
-                    Remove Image
-                </button>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Product Name</label>
-                {{ form.name }}
-            </div>
-        
-            <div class="mb-3">
-                <label class="form-label">Category</label>
-                {{ form.category }}
-            </div>
-        
-            <div class="mb-3">
-                <label class="form-label">Brand</label>
-                {{ form.brand }}
-            </div>
-        
-            <div class="mb-3">
-                <label class="form-label">Specification</label>
-                {{ form.specification }}
-            </div>
-        
-            <div class="mb-3">
-                <label class="form-label">Product Description</label>
-                {{ form.description }}
-            </div>
-        
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-danger w-100">Post/Publish</button>
-        </form>
-    </div>
-    <!-- Bootstrap js -->
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script>
-        document.getElementById("imageUpload").addEventListener("change", function (event) {
-            const previewContainer = document.getElementById("imagePreview");
-            const uploadLabel = document.getElementById("uploadLabel");
-            const removeButton = document.getElementById("removeImage");
-        
-            previewContainer.innerHTML = ""; // Clear previous preview
-            const files = event.target.files;
-        
-            if (files.length > 0) {
-                uploadLabel.style.display = "none"; // Hide the label
-                removeButton.style.display = "inline-block"; // Show remove button
-        
-                const file = files[0];
-                const reader = new FileReader();
-        
-                reader.onload = function (e) {
-                    const img = document.createElement("img");
-                    img.src = e.target.result;
-                    img.style.maxWidth = "100px";
-                    img.style.margin = "5px";
-                    img.style.borderRadius = "5px";
-                    img.style.cursor = "pointer"; // Allow changing image
-                    img.title = "Click to change image";
+                {% endif %}
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <!-- Custom Image Upload Box -->
+                    <div class="image-upload-box text-center mb-3">
+                        <label for="imageUpload" class="upload-area" id="uploadLabel">
+                            <i class="fa fa-camera fa-2x"></i>
+                            <p>Upload Image</p>
+                        </label>
                     
-                    // Click on image to change it
-                    img.addEventListener("click", function () {
-                        document.getElementById("imageUpload").click();
-                    });
-        
-                    previewContainer.appendChild(img);
-                };
-        
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        // Remove Image & Reset Input
-        document.getElementById("removeImage").addEventListener("click", function () {
-            document.getElementById("imageUpload").value = ""; // Reset file input
-            document.getElementById("uploadLabel").style.display = "flex"; // Show upload label
-            document.getElementById("imagePreview").innerHTML = ""; // Clear preview
-            document.getElementById("removeImage").style.display = "none"; // Hide remove button
-        });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const messagePopup = document.getElementById("messagePopup");
+                        <input type="file" id="imageUpload" name="images" accept="image/*" hidden>  
+                        <div id="imagePreview" class="mt-2"></div> <!-- Image preview section -->
+                        
+                        <!-- Remove Button (Initially Hidden) -->
+                        <button type="button" id="removeImage" class="btn btn-danger btn-sm mt-2" style="display: none;">
+                            Remove Image
+                        </button>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Product Name</label>
+                        {{ form.name }}
+                    </div>
+                
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Category</label>
+                                {{ form.category }}
+                            </div>
+                    
+                            <div class="mb-3">
+                                <label class="form-label">Specification</label>
+                                {{ form.specification }}
+                            </div>
+                        </div>
+                    
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Brand</label>
+                                {{ form.brand }}
+                            </div>
+                    
+                            <div class="mb-3">
+                                <label class="form-label">Product Description</label>
+                                {{ form.description }}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-danger w-100">Post/Publish</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- hero area end -->
+{% endblock home_content %}
+{% block extrajs %}
+<script>
+    document.getElementById("imageUpload").addEventListener("change", function (event) {
+        const previewContainer = document.getElementById("imagePreview");
+        const uploadLabel = document.getElementById("uploadLabel");
+        const removeButton = document.getElementById("removeImage");
     
-            // Auto-hide the alert after 3 seconds
-            if (messagePopup) {
-                setTimeout(function () {
-                    messagePopup.style.display = "none";
-                }, 6000);
-            }
-        });
-    </script>
-</body>
+        previewContainer.innerHTML = ""; // Clear previous preview
+        const files = event.target.files;
+    
+        if (files.length > 0) {
+            uploadLabel.style.display = "none"; // Hide the label
+            removeButton.style.display = "inline-block"; // Show remove button
+    
+            const file = files[0];
+            const reader = new FileReader();
+    
+            reader.onload = function (e) {
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.style.maxWidth = "100px";
+                img.style.margin = "5px";
+                img.style.borderRadius = "5px";
+                img.style.cursor = "pointer"; // Allow changing image
+                img.title = "Click to change image";
+                
+                // Click on image to change it
+                img.addEventListener("click", function () {
+                    document.getElementById("imageUpload").click();
+                });
+    
+                previewContainer.appendChild(img);
+            };
+    
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Remove Image & Reset Input
+    document.getElementById("removeImage").addEventListener("click", function () {
+        document.getElementById("imageUpload").value = ""; // Reset file input
+        document.getElementById("uploadLabel").style.display = "flex"; // Show upload label
+        document.getElementById("imagePreview").innerHTML = ""; // Clear preview
+        document.getElementById("removeImage").style.display = "none"; // Hide remove button
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const messagePopup = document.getElementById("messagePopup");
 
-</html>
+        // Auto-hide the alert after 3 seconds
+        if (messagePopup) {
+            setTimeout(function () {
+                messagePopup.style.display = "none";
+            }, 6000);
+        }
+    });
+</script>
+{% endblock extrajs %}
