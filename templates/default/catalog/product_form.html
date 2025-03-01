@@ -19,7 +19,6 @@
 
     .image-upload-box {
         width: 100%;
-        max-width: 400px;
         height: 150px;
         border: 2px dashed #d3d3d3;
         border-radius: 8px;
@@ -86,16 +85,16 @@
                     <div class="image-upload-box text-center mb-3">
                         <label for="imageUpload" class="upload-area" id="uploadLabel">
                             <i class="fa fa-camera fa-2x"></i>
-                            <p>Upload Image</p>
+                            <p>Upload Images (Max 5)</p>
                         </label>
                     
-                        <input type="file" id="imageUpload" name="images" accept="image/*" hidden>  
-                        <div id="imagePreview" class="mt-2"></div> <!-- Image preview section -->
-                        
-                        <!-- Remove Button (Initially Hidden) -->
-                        <button type="button" id="removeImage" class="btn btn-danger btn-sm mt-2" style="display: none;">
-                            Remove Image
-                        </button>
+                        <input type="file" id="imageUpload" name="images" accept="image/*" multiple hidden>
+                    
+                        <!-- Image preview section -->
+                        <div id="imagePreview" class="mt-2 d-flex flex-wrap justify-content-center"></div>
+                    
+                        <!-- Error message -->
+                        <p id="errorMsg" class="text-danger mt-2" style="display: none;">You can only upload up to 5 images.</p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Product Name</label>
@@ -136,51 +135,69 @@
     <!-- hero area end -->
 {% endblock home_content %}
 {% block extrajs %}
-<script>
-    document.getElementById("imageUpload").addEventListener("change", function (event) {
-        const previewContainer = document.getElementById("imagePreview");
-        const uploadLabel = document.getElementById("uploadLabel");
-        const removeButton = document.getElementById("removeImage");
-    
-        previewContainer.innerHTML = ""; // Clear previous preview
-        const files = event.target.files;
-    
-        if (files.length > 0) {
-            uploadLabel.style.display = "none"; // Hide the label
-            removeButton.style.display = "inline-block"; // Show remove button
-    
-            const file = files[0];
-            const reader = new FileReader();
-    
-            reader.onload = function (e) {
-                const img = document.createElement("img");
-                img.src = e.target.result;
-                img.style.maxWidth = "100px";
-                img.style.margin = "5px";
-                img.style.borderRadius = "5px";
-                img.style.cursor = "pointer"; // Allow changing image
-                img.title = "Click to change image";
-                
-                // Click on image to change it
-                img.addEventListener("click", function () {
-                    document.getElementById("imageUpload").click();
-                });
-    
-                previewContainer.appendChild(img);
-            };
-    
-            reader.readAsDataURL(file);
-        }
-    });
-    
-    // Remove Image & Reset Input
-    document.getElementById("removeImage").addEventListener("click", function () {
-        document.getElementById("imageUpload").value = ""; // Reset file input
-        document.getElementById("uploadLabel").style.display = "flex"; // Show upload label
-        document.getElementById("imagePreview").innerHTML = ""; // Clear preview
-        document.getElementById("removeImage").style.display = "none"; // Hide remove button
-    });
-</script>
+                    
+                    <!-- JavaScript for Multi-Image Upload with Max 5 Images -->
+                    <script>
+                        document.getElementById("imageUpload").addEventListener("change", function (event) {
+                            let previewContainer = document.getElementById("imagePreview");
+                            let uploadLabel = document.getElementById("uploadLabel");
+                            let errorMsg = document.getElementById("errorMsg");
+                    
+                            let currentImages = previewContainer.children.length;
+                            let newFiles = Array.from(event.target.files);
+                    
+                            if (currentImages + newFiles.length > 5) {
+                                errorMsg.style.display = "block";  // Show error if exceeding limit
+                                return;
+                            } else {
+                                errorMsg.style.display = "none"; // Hide error if within limit
+                            }
+                    
+                            newFiles.forEach((file) => {
+                                if (file.type.startsWith("image/")) {
+                                    let reader = new FileReader();
+                                    reader.onload = function (e) {
+                                        let div = document.createElement("div");
+                                        div.classList.add("position-relative", "m-2");
+                                        div.style.width = "100px";
+                                        div.style.height = "100px";
+                    
+                                        div.innerHTML = `
+                                            <img src="${e.target.result}" class="rounded border shadow-sm w-100 h-100 object-fit-cover">
+                                            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 remove-image">
+                                                &times;
+                                            </button>
+                                        `;
+                                        previewContainer.appendChild(div);
+                    
+                                        // Hide label if 5 images are reached
+                                        if (previewContainer.children.length >= 5) {
+                                            uploadLabel.style.display = "none";
+                                        }
+                                    };
+                                    reader.readAsDataURL(file);
+                                }
+                            });
+                        });
+                    
+                        // Remove image functionality
+                        document.getElementById("imagePreview").addEventListener("click", function (e) {
+                            if (e.target.classList.contains("remove-image")) {
+                                e.target.parentElement.remove(); // Remove image preview
+                    
+                                // Show label if images are less than 5
+                                if (document.getElementById("imagePreview").children.length < 5) {
+                                    document.getElementById("uploadLabel").style.display = "block";
+                                }
+                            }
+                        });
+                    
+                        // Clicking the preview area allows adding more images
+                        document.getElementById("imagePreview").addEventListener("click", function () {
+                            document.getElementById("imageUpload").click();
+                        });
+                    </script>
+                    
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const messagePopup = document.getElementById("messagePopup");

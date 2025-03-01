@@ -16,6 +16,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("user:user-products")  # Update with the actual URL name
 
     def form_valid(self, form):
+        print(form)
         user = self.request.user
         time_threshold = now() - timedelta(hours=24)
         recent_product_count = Product.objects.filter(created_by=user, created_at__gte=time_threshold).count()
