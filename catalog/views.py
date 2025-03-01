@@ -26,7 +26,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         return redirect(self.success_url)
 
 
-class ProductListView(ListView):
+class ProductListView(LoginRequiredMixin, ListView):
     model = Product
     template_name = "default/catalog/product_list.html"
     context_object_name = "products"
@@ -58,7 +58,7 @@ class ProductListView(ListView):
         context["selected_category"] = self.request.GET.get("category", "")
         return context
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = "default/catalog/product_detail.html"
     context_object_name = "product"
