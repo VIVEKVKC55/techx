@@ -103,32 +103,26 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
         return 5  # Default limit for free users
 
     def get(self, request, *args, **kwargs):
-        today_str = now().strftime("%Y-%m-%d")
-        product_views = request.session.get("product_views", {"date": today_str, "count": 0})
+        product = self.get_object()
+        user = request.user
+        time_threshold = now() - timedelta(hours=24)
 
-        if product_views.get("date") != today_str:
-            product_views = {"date": today_str, "count": 0}  # Reset daily views
+        # Count views within the last 24 hours
+        recent_views_count = ProductView.objects.filter(user=user, viewed_at__gte=time_threshold).count()
+        max_views = self.get_max_views(user)
 
-        max_views = self.get_max_views(request.user)
-
-        if product_views["count"] >= max_views:
+        if recent_views_count >= max_views:
             messages.error(request, "You have reached your daily limit of {} product views.".format(max_views))
             return JsonResponse({"error": "Daily limit reached. Please upgrade your plan or come back tomorrow."}, status=403)
-
-        product_views["count"] += 1
-        request.session["product_views"] = product_views
-        request.session.modified = True
-
-        product = self.get_object()
-
-        # Store the product view in the database
-        ProductView.objects.get_or_create(user=request.user, product=product)
+        # Store product view in the database (only if it's not already counted)
+        ProductView.objects.get_or_create(user=user, product=product, defaults={"viewed_at": now()})
 
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """Pass viewed products to the template"""
         context = super().get_context_data(**kwargs)
-        viewed_products = Product.objects.filter(user_views__user=self.request.user)
+        time_threshold = now() - timedelta(hours=24)
+        viewed_products = Product.objects.filter(user_views__user=self.request.user, user_views__viewed_at__gte=time_threshold)
         context["viewed_products"] = viewed_products
         return context
