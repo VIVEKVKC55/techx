@@ -1,5 +1,5 @@
 from django.views.generic import CreateView, ListView, DetailView
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from .models import Category, Product, ProductImage
@@ -7,6 +7,7 @@ from .forms import ProductForm
 from django.db.models import Q
 from django.contrib import messages
 from django.utils.timezone import now, timedelta
+from django.http import JsonResponse
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -15,18 +16,29 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     template_name = "default/catalog/product_form.html"
     success_url = reverse_lazy("user:user-products")  # Update with the actual URL name
 
+    def get_max_products(self, user):
+        """Returns the max number of products a user can add in 24 hours."""
+        if hasattr(user, 'subscription'):
+            if user.subscription.plan == "scalable":
+                return user.subscription.extra_slots + 10  # Base 10 + Purchased Slots
+            elif user.subscription.plan == "premium":
+                return 10  # 10 products per day for premium users
+        return 2  # Default limit for free users
+
     def form_valid(self, form):
         user = self.request.user
         time_threshold = now() - timedelta(hours=24)
         recent_product_count = Product.objects.filter(created_by=user, created_at__gte=time_threshold).count()
+        max_products = self.get_max_products(user)
 
-        if recent_product_count >= 2:
+        # Check if the user has exceeded their limit
+        if max_products != float('inf') and recent_product_count >= max_products:
             messages.error(
                 self.request, 
-                "You can only add 2 products within 24 hours. "
-                "If you want to add more products, please delete an old product or purchase subscription."
+                f"You have reached your daily limit of {max_products} products. "
+                "Buy more slots or upgrade your plan."
             )
-            return redirect(self.request.path)  # Redirect to the same page to show the error
+            return redirect("subscription:buy-slots")  # Redirect to slot purchase page
 
         # Save product with logged-in user
         product = form.save(commit=False)
@@ -74,6 +86,7 @@ class ProductListView(LoginRequiredMixin, ListView):
         context["selected_category"] = self.request.GET.get("category", "")
         return context
 
+
 class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = "default/catalog/product_detail.html"
@@ -81,6 +94,35 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         return Product.objects.filter(is_active=True)
+
+    def get_max_views(self, user):
+        """
+        Returns the maximum number of product views allowed per day
+        based on the user's subscription.
+        """
+        if hasattr(user, 'subscription'):  # Check if user has a subscription
+            if user.subscription.plan in ["premium", "scalable"]:
+                return float('inf')  # Unlimited views for premium & scalable plans
+        return 5  # Default limit for free users
+
+    def get(self, request, *args, **kwargs):
+        today_str = now().strftime("%Y-%m-%d")
+        product_views = request.session.get("product_views", {})
+        print('product_views',product_views)
+        if product_views.get("date") != today_str:
+            product_views = {"date": today_str, "count": 0}
+
+        max_views = self.get_max_views(request.user)
+
+        if product_views["count"] >= max_views:
+            messages.error(request, "You have reached your daily limit of {} product views.".format(max_views))
+            return JsonResponse({"error": "Daily limit reached. Please upgrade your plan or come back tomorrow."}, status=403)
+
+        product_views["count"] += 1
+        request.session["product_views"] = product_views
+        request.session.modified = True
+
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
