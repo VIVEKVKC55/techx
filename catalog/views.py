@@ -112,15 +112,19 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
         max_views = self.get_max_views(user)
 
         if recent_views_count >= max_views:
-            messages.error(request, "You have reached your daily limit of {} product views.".format(max_views))
+            messages.error(request, f"You have reached your daily limit of {max_views} product views.")
             return JsonResponse({"error": "Daily limit reached. Please upgrade your plan or come back tomorrow."}, status=403)
-        # Store product view in the database (only if it's not already counted)
-        ProductView.objects.get_or_create(user=user, product=product, defaults={"viewed_at": now()})
+
+        # Store or update the product view in the database
+        ProductView.objects.update_or_create(
+            user=user, product=product,
+            defaults={"viewed_at": now()}  # Always update the timestamp
+        )
 
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        """Pass viewed products to the template"""
+        """Pass viewed products (last 24 hours) to the template."""
         context = super().get_context_data(**kwargs)
         time_threshold = now() - timedelta(hours=24)
         viewed_products = Product.objects.filter(user_views__user=self.request.user, user_views__viewed_at__gte=time_threshold)
