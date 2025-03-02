@@ -31,6 +31,9 @@
                     <a href="{% url "user:change-password" %}">Change Password</a>
                 </li>
                 <li class="{% if request.path == '/account/plan-upgrade/' %}active{% endif %}">
+                    <a href="{% url "user:my-viewed-products" %}">Plan Upgrade</a>
+                </li>
+                <li class="{% if request.path == '/account/plan-upgrade/' %}active{% endif %}">
                     <a href="#">Plan Upgrade</a>
                 </li>
                 <li>

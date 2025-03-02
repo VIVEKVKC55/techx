@@ -1,0 +1,11 @@
+<h2>Products You Have Viewed</h2>
+
+{% if viewed_products %}
+    <ul>
+        {% for product in viewed_products %}
+            <li><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You haven't viewed any products yet.</p>
+{% endif %}

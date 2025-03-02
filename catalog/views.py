@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.contrib import messages
 from django.utils.timezone import now, timedelta
 from django.http import JsonResponse
+from customer.models import ProductView  # Import the new model
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -96,21 +97,17 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
         return Product.objects.filter(is_active=True)
 
     def get_max_views(self, user):
-        """
-        Returns the maximum number of product views allowed per day
-        based on the user's subscription.
-        """
-        if hasattr(user, 'subscription'):  # Check if user has a subscription
-            if user.subscription.plan in ["premium", "scalable"]:
-                return float('inf')  # Unlimited views for premium & scalable plans
-        return 5  # Default limit for free users
+        """Returns the max number of product views allowed per day based on subscription."""
+        if hasattr(user, 'subscription') and user.subscription.plan in ["premium", "scalable"]:
+            return float('inf')  # Unlimited for premium/scalable users
+        return 10  # Default limit for free users
 
     def get(self, request, *args, **kwargs):
         today_str = now().strftime("%Y-%m-%d")
-        product_views = request.session.get("product_views", {})
-        print('product_views',product_views)
+        product_views = request.session.get("product_views", {"date": today_str, "count": 0})
+
         if product_views.get("date") != today_str:
-            product_views = {"date": today_str, "count": 0}
+            product_views = {"date": today_str, "count": 0}  # Reset daily views
 
         max_views = self.get_max_views(request.user)
 
@@ -122,8 +119,16 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
         request.session["product_views"] = product_views
         request.session.modified = True
 
+        product = self.get_object()
+
+        # Store the product view in the database
+        ProductView.objects.get_or_create(user=request.user, product=product)
+
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        """Pass viewed products to the template"""
         context = super().get_context_data(**kwargs)
+        viewed_products = Product.objects.filter(user_views__user=self.request.user)
+        context["viewed_products"] = viewed_products
         return context

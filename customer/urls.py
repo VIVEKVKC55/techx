@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import register, user_login, user_logout,forgot_password_request,reset_password
-from .cus_view.dashboard import ProfileView, UserProductListView, CustomPasswordChangeView
+from .cus_view.dashboard import ProfileView, UserProductListView, CustomPasswordChangeView, UserViewedProductsView
 
 
 app_name="user"
@@ -14,5 +14,6 @@ urlpatterns = [
     path("profile/", ProfileView.as_view(), name="profile"),
     path("user-products/", UserProductListView.as_view(), name="user-products"),
     path("change-password/", CustomPasswordChangeView.as_view(), name="change-password"),
+    path("my-viewed-products/", UserViewedProductsView.as_view(), name="my-viewed-products"),
 ]
 
