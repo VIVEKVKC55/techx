@@ -100,7 +100,7 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
         """Returns the max number of product views allowed per day based on subscription."""
         if hasattr(user, 'subscription') and user.subscription.plan in ["premium", "scalable"]:
             return float('inf')  # Unlimited for premium/scalable users
-        return 10  # Default limit for free users
+        return 5  # Default limit for free users
 
     def get(self, request, *args, **kwargs):
         today_str = now().strftime("%Y-%m-%d")

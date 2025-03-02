@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
 from django.shortcuts import render
+from customer.models import ProductView
 
 
 class ProfileView(LoginRequiredMixin, TemplateView):
@@ -37,6 +38,18 @@ class UserViewedProductsView(LoginRequiredMixin, View):
         viewed_products = Product.objects.filter(user_views__user=request.user).distinct()
 
         return render(request, "default/customer/dashboard/viewed_products.html", {"viewed_products": viewed_products})
-    
 
 
+class UsersWhoViewedMyProductsView(LoginRequiredMixin, View):
+    def get(self, request):
+        """Retrieve users who have viewed my products."""
+        my_products = Product.objects.filter(created_by=request.user)
+        product_views = ProductView.objects.filter(product__in=my_products).select_related("user", "product")
+
+        user_product_views = {}
+        for view in product_views:
+            if view.product not in user_product_views:
+                user_product_views[view.product] = []
+            user_product_views[view.product].append(view.user)
+
+        return render(request, "default/customer/dashboard/users_who_viewed_my_products.html", {"user_product_views": user_product_views})

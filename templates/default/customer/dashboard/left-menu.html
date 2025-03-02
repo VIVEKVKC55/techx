@@ -30,8 +30,11 @@
                 <li class="{% if request.path == '/accounts/change-password/' %}active{% endif %}">
                     <a href="{% url "user:change-password" %}">Change Password</a>
                 </li>
-                <li class="{% if request.path == '/account/plan-upgrade/' %}active{% endif %}">
-                    <a href="{% url "user:my-viewed-products" %}">Plan Upgrade</a>
+                <li class="{% if request.path == '/accounts/my-viewed-products/' %}active{% endif %}">
+                    <a href="{% url "user:my-viewed-products" %}">My Viewed</a>
+                </li>
+                <li class="{% if request.path == '/accounts/users-who-viewed-my-products/' %}active{% endif %}">
+                    <a href="{% url "user:users-who-viewed-my-products" %}">All User Viewed</a>
                 </li>
                 <li class="{% if request.path == '/account/plan-upgrade/' %}active{% endif %}">
                     <a href="#">Plan Upgrade</a>

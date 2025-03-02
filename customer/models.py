@@ -24,3 +24,6 @@ class ProductView(models.Model):
 
     class Meta:
         unique_together = ("user", "product")  # Prevent duplicate views per user per product
+
+    def __str__(self):
+        return f"{self.user.username} viewed {self.product.name}"
