@@ -13,10 +13,10 @@
         <ul>
             <ul class="nav">
                 <li class="{% if page == 'profile' %}active{% endif %}">
-                    <a href="#">Profile</a>
+                    <a href="{% url "user:profile" %}">Profile</a>
                 </li>
                 <li class="{% if request.path == '/accounts/user-products/' %}active{% endif %}">
-                    <a href="{% url 'user:user-products' %}">All Products</a>
+                    <a href="{% url 'user:user-products' %}">My Products</a>
                 </li>
                 <li class="{% if request.path == '/product/create/' %}active{% endif %}">
                     <a href="{% url 'catalog:product_create' %}">Add Product</a>

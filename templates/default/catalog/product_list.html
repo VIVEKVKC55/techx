@@ -1,7 +1,7 @@
 {% extends "default/layout/layout.html" %}
 {% load static %}
 
-{% block title %} {{ query }}{{category}} - Products List {% endblock %}
+{% block title %} {{ query }}{{category}} Products List {% endblock %}
 {% block canonical_url %}{{request.scheme}}://{{request.META.HTTP_HOST}}{{request.path}}{% endblock %}
 {% block extrastyle %}
 <style>
@@ -53,9 +53,6 @@
         padding: 15px;
         border-radius: 10px;
     }
-    .fw-bold {
-        color: #dc3545 !important;
-    }
 </style>
 {% endblock extrastyle %}
 {% block ld_json %}
@@ -69,15 +66,18 @@
         <div class="nav-close">
             <i class="fa fa-close" aria-hidden="true"></i>
         </div>
+        <div>
+            Categories
+        </div>
         <nav class="amado-nav">
             <ul>
-                <li class="{% if not selected_category and not query %}active{% endif %}"><a href="{% url 'catalog:product_list' %}" class="{% if not selected_category and not query %}fw-bold{% endif %}">
+                <li class="{% if not selected_category and not query %}active{% endif %}"><a href="{% url 'catalog:product_list' %}">
                         All Categories
                     </a>
                 </li>
                 {% for category in categories %}
                 <li class="{% if selected_category|slugify == category.slug|slugify %}active{% endif %}">
-                    <a href="{% url 'catalog:product_list' %}?category={{ category.slug }}" class="{% if selected_category|slugify == category.slug|slugify %}fw-bold text-denger{% endif %}">
+                    <a href="{% url 'catalog:product_list' %}?category={{ category.slug }}">
                         {{ category.name }}
                     </a>
                 </li>
