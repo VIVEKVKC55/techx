@@ -45,7 +45,7 @@
                                     {% for user in users %}
                                     <tr>
                                         <td>{{ forloop.counter }}</td>
-                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.first_name }}</td>
                                         <td>{{ user.email }}</td>
                                         <td>
                                             {% for view in product.user_views.all %}

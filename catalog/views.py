@@ -106,7 +106,6 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
         product = self.get_object()
         user = request.user
         time_threshold = now() - timedelta(hours=24)
-
         # Check if the user has already viewed this product
         existing_view = ProductView.objects.filter(user=user, product=product).first()
 
@@ -115,15 +114,22 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
             recent_views_count = ProductView.objects.filter(user=user, viewed_at__gte=time_threshold).count()
             max_views = self.get_max_views(user)
 
+            # If limit is reached, return error JSON if AJAX, otherwise show message
             if recent_views_count >= max_views:
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse({"error": "You have reached your daily limit of product views."}, status=403)
                 messages.error(request, f"You have reached your daily limit of {max_views} product views.")
-                return JsonResponse({"error": "Daily limit reached. Please upgrade your plan or come back tomorrow."}, status=403)
+                return self.render_to_response(self.get_context_data())  # Render the same page
 
         # Store or update the product view in the database
         ProductView.objects.update_or_create(
             user=user, product=product,
             defaults={"viewed_at": now()}  # Always update the timestamp
         )
+
+        # Check if the request is an AJAX request
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse({"redirect_url": request.path})  # Return JSON response with redirect URL
 
         return super().get(request, *args, **kwargs)
 

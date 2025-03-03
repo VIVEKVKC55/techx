@@ -115,7 +115,7 @@
             <!-- Product Card -->
             {% for product in products %}
                 <div class="col-md-4 mb-4">
-                    <a href="{% url 'catalog:product_detail' cat_slug=product.category.slug pk=product.pk %}" class="text-decoration-none">
+                    <a href="{% url 'catalog:product_detail' cat_slug=product.category.slug pk=product.pk %}" class="product-link text-decoration-none">
                         <div class="product-card position-relative h-100">
                             <img src="{{ product.default_image.image.url }}" class="img-fluid rounded" alt="Laptop">
                             <span class="wishlist-icon position-absolute top-0 end-0 m-2">

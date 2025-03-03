@@ -32,6 +32,65 @@
             }, 3000);
         }
     });
+    $(document).ready(function () {
+        $(".product-card").on("click", function (e) {
+            e.preventDefault();
+            let productUrl = $(this).closest("a").attr("href");
+    
+            $.ajax({
+                url: productUrl,
+                type: "GET",
+                dataType: "json",
+                headers: { "X-Requested-With": "XMLHttpRequest" }, // Mark request as AJAX
+                success: function (response) {
+                    if (response.redirect_url) {
+                        window.location.href = response.redirect_url; // Redirect if allowed
+                    }
+                },
+                error: function (xhr) {
+                    if (xhr.status === 403) {
+                        let errorMsg = xhr.responseJSON?.error || "You have reached your daily limit.";
+                        showErrorModal(errorMsg); // Show modal alert
+                    } else {
+                        alert("An error occurred while processing your request.");
+                    }
+                },
+            });
+        });
+    
+        // Function to display a Bootstrap modal dynamically
+        function showErrorModal(message) {
+            let modalHtml = `
+                <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-danger" id="errorModalLabel">Alert</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                ${message}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+    
+            // Append modal to the body if it doesn't exist
+            if ($("#errorModal").length === 0) {
+                $("body").append(modalHtml);
+            } else {
+                $("#errorModal .modal-body").text(message);
+            }
+    
+            // Show the modal
+            $("#errorModal").modal("show");
+        }
+    });
+    
 </script>
 <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 <!-- ##### All Javascript Files ##### -->
