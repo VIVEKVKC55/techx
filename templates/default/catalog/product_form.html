@@ -67,7 +67,16 @@
 
     <div class="products-catagories-area clearfix">
         <div class="container mt-4 mb-4">
-            <h2 class="mb-4">Add Product Page</h2>
+            <main class="ms-sm-auto px-md-4 content">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>Add Product Page</h2>
+                    <div class="p-2 mb-3 bg-light border rounded">
+                        <span class="text-primary">{{ user.subscription.get_plan_display}}</span> /
+                        <span class="text-danger">{{ user.subscription.get_duration_days_display}}</span> -
+                        <span class="text-danger">{{ user.subscription.remaining_days}} Days Remaining</span>
+                    </div>
+                </div>
+            </main>
             <div class="card shadow-lg border-0 rounded-4 p-3">
                 {% if messages %}
                     <div id="messagePopup" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">

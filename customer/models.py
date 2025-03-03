@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from catalog.models import Product
 from django.utils.timezone import now
 from datetime import timedelta
+from django.utils import timezone
+
 
 class Subscription(models.Model):
     PLAN_CHOICES = [
@@ -38,6 +40,13 @@ class Subscription(models.Model):
             return True  # Basic users are always active
         return self.end_date >= now()
 
+    def remaining_days(self):
+        """Calculate remaining days if end_date exists."""
+        if self.end_date:
+            now = timezone.now()
+            delta = (self.end_date - now).days
+            return max(delta, 0)  # Avoid negative values
+        return "Unlimited"
 
     def __str__(self):
         return f"{self.user.username} - {self.get_plan_display()} ({self.get_duration_days_display() if self.duration_days else 'Free'})"
