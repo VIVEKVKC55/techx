@@ -107,13 +107,17 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
         user = request.user
         time_threshold = now() - timedelta(hours=24)
 
-        # Count views within the last 24 hours
-        recent_views_count = ProductView.objects.filter(user=user, viewed_at__gte=time_threshold).count()
-        max_views = self.get_max_views(user)
+        # Check if the user has already viewed this product
+        existing_view = ProductView.objects.filter(user=user, product=product).first()
 
-        if recent_views_count >= max_views:
-            messages.error(request, f"You have reached your daily limit of {max_views} product views.")
-            return JsonResponse({"error": "Daily limit reached. Please upgrade your plan or come back tomorrow."}, status=403)
+        if not existing_view:
+            # Count total views within the last 24 hours
+            recent_views_count = ProductView.objects.filter(user=user, viewed_at__gte=time_threshold).count()
+            max_views = self.get_max_views(user)
+
+            if recent_views_count >= max_views:
+                messages.error(request, f"You have reached your daily limit of {max_views} product views.")
+                return JsonResponse({"error": "Daily limit reached. Please upgrade your plan or come back tomorrow."}, status=403)
 
         # Store or update the product view in the database
         ProductView.objects.update_or_create(
