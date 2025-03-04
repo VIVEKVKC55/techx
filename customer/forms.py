@@ -3,13 +3,15 @@ from .models import Subscription
 
 # Define Subscription Pricing
 PLAN_PRICES = {
-    "premium": {30: 100, 90: 270, 365: 1000},  # Prices for Premium-A
-    "scalable": {30: 150, 90: 400, 365: 1500},  # Prices for Premium-B
+    "premium": {30: 100, 180: 550, 365: 1000},  # Prices for Premium-A
+    "scalable": {30: 120, 180: 650, 365: 1200},  # Prices for Premium-B
 }
+PLAN_CHOICE = [("premium", "Premium A"), ("scalable", "Premium B")]
+DURATION_CHOICE = [(30, "30 Days"), (180, "180 Days"), (365, "365 Days")]
 
 class SubscriptionUpgradeForm(forms.ModelForm):
-    plan = forms.ChoiceField(choices=[("premium", "Premium"), ("scalable", "Scalable")], required=True)
-    duration = forms.ChoiceField(choices=[(30, "30 Days"), (90, "90 Days"), (365, "365 Days")], required=True)
+    plan = forms.ChoiceField(choices=PLAN_CHOICE, required=True)
+    duration = forms.ChoiceField(choices=DURATION_CHOICE, required=True)
 
     class Meta:
         model = Subscription

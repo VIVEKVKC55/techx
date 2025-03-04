@@ -26,7 +26,7 @@ class Subscription(models.Model):
     
     DURATION_CHOICES = [
         (30, "1 Month"),
-        (90, "3 Months"),
+        (180, "6 Months"),
         (365, "1 Year"),
     ]
 

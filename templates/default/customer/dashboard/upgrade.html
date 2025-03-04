@@ -17,7 +17,8 @@
                 <!-- Current Subscription Info -->
                 <div class="p-3 bg-light rounded">
                     <h5>Current Subscription</h5>
-                    <p><strong>Plan:</strong> {{ subscription.plan|capfirst }}</p>
+                    <p><strong>Plan:</strong>{% if subscription.plan == "premium" %} Premium A {% elif subscription.plan == "scalable" %} Premium B {% else %} {{ subscription.plan|capfirst }} {% endif %}
+                    </p>
                     <p><strong>Duration:</strong> {{ subscription.duration_days }} days</p>
                 </div>
 
@@ -34,7 +35,9 @@
                                 <select id="planSelect" name="plan" class="form-select" required>
                                     <option value="" selected disabled>Select a Plan</option>
                                     {% for plan, durations in plan_prices.items %}
-                                        <option value="{{ plan }}">{{ plan|capfirst }}</option>
+                                        <option value="{{ plan }}">
+                                            {% if plan == "premium" %} Premium A {% elif plan == "scalable" %} Premium B {% else %} {{ plan|capfirst }} {% endif %}
+                                        </option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -50,7 +53,7 @@
 
                         <!-- Dynamic Price Display -->
                         <div class="mt-3">
-                            <h5>Total Price: <span id="priceDisplay" class="text-danger fw-bold">$0</span></h5>
+                            <h5>Total Price: <span id="priceDisplay" class="text-danger fw-bold">0 AED</span></h5>
                         </div>
 
                         <button type="submit" class="btn btn-danger mt-3">Upgrade Plan</button>
@@ -68,17 +71,17 @@
                             <tr>
                                 <th>Plan</th>
                                 <th>30 Days</th>
-                                <th>90 Days</th>
+                                <th>180 Days</th>
                                 <th>365 Days</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for plan, durations in plan_prices.items %}
                             <tr>
-                                <td><strong>{{ plan|capfirst }}</strong></td>
-                                <td>${{ durations.30|default:"-" }}</td>
-                                <td>${{ durations.90|default:"-" }}</td>
-                                <td>${{ durations.365|default:"-" }}</td>
+                                <td><strong>{% if plan == "premium" %} Premium A {% elif plan == "scalable" %} Premium B {% else %} {{ plan|capfirst }} {% endif %}</strong></td>
+                                <td>{{ durations.30|default:"-" }} AED</td>
+                                <td>{{ durations.180|default:"-" }} AED</td>
+                                <td>{{ durations.365|default:"-" }} AED</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -114,7 +117,7 @@
     function updatePrice() {
         const plan = planSelect.value;
         const duration = durationSelect.value;
-        priceDisplay.textContent = duration ? `$${planPrices[plan][duration]}` : "$0";
+        priceDisplay.textContent = duration ? `${planPrices[plan][duration]} AED` : "0 AED";
     }
 
     // Event listeners
