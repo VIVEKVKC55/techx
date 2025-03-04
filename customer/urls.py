@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import register, user_login, user_logout,forgot_password_request,reset_password
-from .cus_view.dashboard import ProfileView, UserProductListView, CustomPasswordChangeView, UserViewedProductsView, UsersWhoViewedMyProductsView
+from .cus_view.dashboard import ProfileView, UserProductListView, CustomPasswordChangeView, UserViewedProductsView, UsersWhoViewedMyProductsView, SubscriptionUpgradeView
 
 
 app_name="user"
@@ -16,4 +16,5 @@ urlpatterns = [
     path("change-password/", CustomPasswordChangeView.as_view(), name="change-password"),
     path("my-viewed-products/", UserViewedProductsView.as_view(), name="my-viewed-products"),
     path("users-who-viewed-my-products/", UsersWhoViewedMyProductsView.as_view(), name="users-who-viewed-my-products"),
+    path("plan-upgrade/", SubscriptionUpgradeView.as_view(), name="subscription_upgrade"),
 ]

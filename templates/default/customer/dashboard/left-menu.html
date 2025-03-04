@@ -36,8 +36,8 @@
                 <li class="{% if request.path == '/accounts/users-who-viewed-my-products/' %}active{% endif %}">
                     <a href="{% url "user:users-who-viewed-my-products" %}">All User Viewed</a>
                 </li>
-                <li class="{% if request.path == '/account/plan-upgrade/' %}active{% endif %}">
-                    <a href="#">Plan Upgrade</a>
+                <li class="{% if request.path == '/accounts/plan-upgrade/' %}active{% endif %}">
+                    <a href="{% url "user:subscription_upgrade" %}">Plan Upgrade</a>
                 </li>
                 <li>
                     <a href="{% url "user:logout" %}">Logout</a>

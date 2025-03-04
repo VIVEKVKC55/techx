@@ -39,7 +39,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
                 f"You have reached your daily limit of {max_products} products. "
                 "Buy more slots or upgrade your plan."
             )
-            return redirect("subscription:buy-slots")  # Redirect to slot purchase page
+            return redirect("user:subscription_upgrade")  # Redirect to slot purchase page
 
         # Save product with logged-in user
         product = form.save(commit=False)

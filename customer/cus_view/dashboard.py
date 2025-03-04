@@ -5,8 +5,9 @@ from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views import View
-from django.shortcuts import render
-from customer.models import ProductView
+from django.shortcuts import render, redirect
+from customer.models import ProductView, Subscription
+from django.contrib import messages
 
 
 class ProfileView(LoginRequiredMixin, TemplateView):
@@ -53,3 +54,50 @@ class UsersWhoViewedMyProductsView(LoginRequiredMixin, View):
             user_product_views[view.product].append(view.user)
 
         return render(request, "default/customer/dashboard/users_who_viewed_my_products.html", {"user_product_views": user_product_views})
+
+
+from customer.forms import SubscriptionUpgradeForm, PLAN_PRICES
+
+class SubscriptionUpgradeView(LoginRequiredMixin, View):
+    template_name = "default/customer/dashboard/upgrade.html"
+
+    def get(self, request, *args, **kwargs):
+        """Render the upgrade form with the user's current subscription."""
+        subscription, created = Subscription.objects.get_or_create(user=request.user)
+        form = SubscriptionUpgradeForm(initial={"plan": subscription.pending_plan or subscription.plan})
+        
+        return render(request, self.template_name, {
+            "form": form,
+            "subscription": subscription,
+            "plan_prices": PLAN_PRICES,
+        })
+
+    def post(self, request, *args, **kwargs):
+        """Handle subscription upgrade requests via form."""
+        subscription, created = Subscription.objects.get_or_create(user=request.user)
+        form = SubscriptionUpgradeForm(request.POST)
+
+        if form.is_valid():
+            new_plan = form.cleaned_data["plan"]
+            new_duration = int(form.cleaned_data["duration"])
+            price = PLAN_PRICES[new_plan][new_duration]
+
+            # Prevent downgrade to basic plan
+            if subscription.plan in ["premium", "scalable"] and new_plan == "basic":
+                messages.error(request, "Downgrade to the basic plan is not allowed.")
+                return redirect("user:subscription_upgrade")
+
+            # Save pending request for admin approval
+            subscription.pending_plan = new_plan
+            subscription.pending_duration = new_duration
+            subscription.is_approved = False
+            subscription.save()
+
+            messages.success(request, f"Your upgrade request to {new_plan} for {new_duration} days at ${price} is pending admin approval.")
+            return redirect("user:subscription_upgrade")
+
+        return render(request, self.template_name, {
+            "form": form,
+            "subscription": subscription,
+            "plan_prices": PLAN_PRICES,
+        })
