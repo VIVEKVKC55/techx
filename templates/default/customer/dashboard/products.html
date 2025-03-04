@@ -39,12 +39,10 @@
                                 {% comment %} <td>${{ product.price }}</td> {% endcomment %}
                                 <td>{{ product.created_at|date:"Y-m-d H:i" }}</td>
                                 <td>
-                                    <a href="#" class="btn btn-sm btn-primary">
+                                    {% comment %} <a href="#" class="btn btn-sm btn-primary">
                                         <i class="fa fa-pencil-square"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-danger">
-                                        <i class="fa fa-trash"></i>
-                                    </a>
+                                    </a> {% endcomment %}
+                                    <button class="btn btn-danger delete-product" data-id="{{ product.id }}"><i class="fa fa-trash"></i></button>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -76,5 +74,52 @@
             console.error("jQuery or DataTables is not loaded correctly.");
         }
     });
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".delete-product").forEach(button => {
+        button.addEventListener("click", async function () {
+            const productId = this.getAttribute("data-id");
+            const row = this.closest("tr"); // Find the table row (or closest parent container)
+
+            const confirmation = await Swal.fire({
+                title: "Are you sure?",
+                text: "You won’t be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            });
+
+            if (confirmation.isConfirmed) {
+                try {
+                    const response = await fetch(`/product/delete-product/${productId}/`, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}",
+                            "Content-Type": "application/json"
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        await Swal.fire("Deleted!", "Product has been deleted.", "success");
+
+                        // ✅ Remove the row from the DOM instead of reloading the page
+                        if (row) {
+                            row.remove();
+                        }
+                    } else {
+                        Swal.fire("Error!", data.error || "Something went wrong.", "error");
+                    }
+                } catch (error) {
+                    Swal.fire("Error!", "Server error occurred.", "error");
+                }
+            }
+        });
+    });
+});
 </script>
 {% endblock extrajs %}

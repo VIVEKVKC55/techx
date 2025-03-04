@@ -1,5 +1,5 @@
-from django.views.generic import CreateView, ListView, DetailView
-from django.shortcuts import redirect
+from django.views.generic import CreateView, ListView, DetailView, View
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from .models import Category, Product, ProductImage
@@ -9,6 +9,8 @@ from django.contrib import messages
 from django.utils.timezone import now, timedelta
 from django.http import JsonResponse
 from customer.models import ProductView  # Import the new model
+from django.contrib.auth.decorators import login_required
+
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -140,3 +142,14 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
         viewed_products = Product.objects.filter(user_views__user=self.request.user, user_views__viewed_at__gte=time_threshold)
         context["viewed_products"] = viewed_products
         return context
+
+@login_required
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    
+    if request.method == "POST":
+        product.delete()
+        return JsonResponse({"success": True})
+    
+    return JsonResponse({"success": False, "error": "Invalid request method."}, status=400)
+
