@@ -24,7 +24,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
                 return user.subscription.extra_slots + 10  # Base 10 + Purchased Slots
             elif user.subscription.plan == "premium":
                 return 10  # 10 products per day for premium users
-        return 2  # Default limit for free users
+        return 1  # Default limit for free users
 
     def form_valid(self, form):
         user = self.request.user
@@ -33,7 +33,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         max_products = self.get_max_products(user)
 
         # Check if the user has exceeded their limit
-        if max_products != float('inf') and recent_product_count >= max_products:
+        if recent_product_count >= max_products:
             messages.error(
                 self.request, 
                 f"You have reached your daily limit of {max_products} products. "

@@ -17,16 +17,7 @@
     {% include "default/customer/dashboard/left-menu.html" %}
     <div class="products-catagories-area clearfix">
         <div class="container mb-4 mt-4">
-            <main class="ms-sm-auto px-md-4 content">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h2>Users Who Viewed My Products</h2>
-                    <div class="p-2 mb-3 bg-light border rounded">
-                        <span class="text-primary">{{ user.subscription.get_plan_display}}</span> /
-                        <span class="text-danger">{{ user.subscription.get_duration_days_display}}</span> -
-                        <span class="text-danger">{{ user.subscription.remaining_days}} Days Remaining</span>
-                    </div>
-                </div>
-            </main>
+            {% include 'default/customer/dashboard/page_header.html' with title="Users Who Viewed My Products" %}
             <div class="card shadow-lg border-0 rounded-4 p-3">
                 {% if user_product_views %}
                     {% for product, users in user_product_views.items %}

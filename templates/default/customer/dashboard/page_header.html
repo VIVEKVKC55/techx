@@ -1,0 +1,13 @@
+<div class="d-flex justify-content-between align-items-center">
+    <h2>{{ title }}</h2>
+    <div class="p-2 mb-3 bg-light border rounded">
+        {% if user.subscription %}
+        <span class="text-primary">{{ user.subscription.get_plan_display }}</span> /
+        <span class="text-danger">{{ user.subscription.get_duration_days_display }}</span> - 
+        <span class="text-danger">{{ user.subscription.remaining_days }} Days Remaining</span>
+        {% else %}
+        <span class="text-primary">Basic</span> /
+        <span class="text-danger">Free</span>
+        {% endif %}
+    </div>
+</div>
