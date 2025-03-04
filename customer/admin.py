@@ -6,14 +6,28 @@ from django.utils.timezone import now
 from datetime import timedelta
 from django.utils.html import format_html
 from django.urls import path
-from .models import Subscription
+from .models import Subscription, UserProfile
+from django.conf import settings
+from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 
 User = get_user_model()
 
-class UserAdmin(admin.ModelAdmin):
-    list_display = ("email", "username", "user_category", "date_joined", "is_active")
-    list_filter = ("subscription__plan", "is_active")
-    search_fields = ("email", "username")
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "phone_number", "is_verified", "created_at")
+    search_fields = ("user__username", "phone_number")
+    list_filter = ("is_verified", "created_at")
+
+
+class CustomUserAdmin(DefaultUserAdmin):
+    list_display = (
+        "email", "username", "user_category", "phone_number",
+        "location", "profile_picture_preview", "is_verified",
+        "date_joined", "is_active"
+    )
+    list_filter = ("subscription__plan", "is_active", "profile__is_verified")
+    search_fields = ("email", "username", "profile__phone_number", "profile__location")
+    actions = ["approve_users"]  # Add bulk approval option
 
     def user_category(self, obj):
         """Determine if user is Free or Paid and their plan type."""
@@ -24,12 +38,70 @@ class UserAdmin(admin.ModelAdmin):
                 return "Paid - Category B"
             return "Paid User"
         return "Free User"
-
+    
     user_category.short_description = "User Type"
 
-# Register the customized User model in admin
-admin.site.unregister(User)  # Unregister default User model
-admin.site.register(User, UserAdmin)
+    def phone_number(self, obj):
+        """Retrieve phone number from UserProfile"""
+        return obj.profile.phone_number if hasattr(obj, "profile") and obj.profile else "N/A"
+    
+    phone_number.short_description = "Phone"
+
+    def location(self, obj):
+        """Retrieve location from UserProfile"""
+        return obj.profile.location if hasattr(obj, "profile") and obj.profile else "N/A"
+    
+    location.short_description = "Location"
+
+    def is_verified(self, obj):
+        """Check if profile is verified"""
+        return obj.profile.is_verified if hasattr(obj, "profile") and obj.profile else False
+    
+    is_verified.short_description = "Verified"
+    is_verified.boolean = True  # Show as a checkbox in admin
+
+    def profile_picture_preview(self, obj):
+        """Display Profile Picture in Admin Panel"""
+        if hasattr(obj, "profile") and obj.profile and obj.profile.profile_picture:
+            return format_html(f'<img src="{obj.profile.profile_picture.url}" width="40" height="40" style="border-radius:50%;">')
+        return "No Image"
+    
+    profile_picture_preview.short_description = "Profile Pic"
+
+    @admin.action(description="Approve selected users and send login details")
+    def approve_users(self, request, queryset):
+        """Approves selected users and sends them login credentials via email"""
+        for user in queryset:
+            if not user.is_active:  # Approve only inactive users
+                default_password = "123456"  # Default password
+                user.set_password(default_password)  # Set default password
+                user.is_active = True
+                user.save()
+
+                # Send email with login details
+                subject = "Your Account is Approved!"
+                message = f"""
+                Dear {user.first_name},
+
+                Your account has been approved by the admin.
+
+                You can now log in with the following details:
+
+                Email: {user.email}
+                Password: {default_password}
+
+                Please change your password after logging in.
+
+                Thank you!
+                """
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+
+        self.message_user(request, "Selected users have been approved and notified via email.")
+
+# Unregister the default User model if already registered
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
+
 
 
 class SubscriptionAdmin(admin.ModelAdmin):

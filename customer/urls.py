@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import register, user_login, user_logout,forgot_password_request,reset_password
+from .views import register, user_login, user_logout,forgot_password_request,reset_password,upload_profile_picture
 from .cus_view.dashboard import ProfileView, UserProductListView, CustomPasswordChangeView, UserViewedProductsView, UsersWhoViewedMyProductsView, SubscriptionUpgradeView
 
 
@@ -11,6 +11,7 @@ urlpatterns = [
     path("logout/", user_logout, name="logout"),
     path("forgot-password/", forgot_password_request, name="forgot_password"),
     path("reset-password/<uidb64>/<token>/", reset_password, name="reset_password"),
+    path("upload-profile-picture/", upload_profile_picture, name="upload_profile_picture"),
     path("profile/", ProfileView.as_view(), name="profile"),
     path("user-products/", UserProductListView.as_view(), name="user-products"),
     path("change-password/", CustomPasswordChangeView.as_view(), name="change-password"),

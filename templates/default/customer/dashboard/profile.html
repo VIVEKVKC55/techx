@@ -33,21 +33,25 @@
                     <!-- Profile Image Section -->
                     <div class="col-md-4 text-center">
                         <div class="position-relative d-inline-block">
+                            {% if user.profile.profile_picture %}
+                            <img src="{{ user.profile.profile_picture.url }}" alt="Profile" id="profileImage" class="border">
+                            {% else %}
                             <img src="{% static "img/logo/seller-logo.png" %}" alt="Profile" id="profileImage" class="border">
+                            {% endif %}
                             <label class="btn btn-sm btn-danger position-absolute bottom-0 start-50 translate-middle-x">
                                 <i class="fa fa-camera"></i>
                                 <input type="file" id="imageUpload" class="d-none">
                             </label>
                         </div>
-                        <h5 class="mt-3">{{ user.first_name }} {{ user.last_name }}</h5>
+                        <h5 class="mt-3">{{ user.get_full_name }}</h5>
                         <p class="text-muted">@{{ user.username }}</p>
                     </div>
                     <!-- User Info Section -->
                     <div class="col-md-8">
                         <ul class="list-group">
                             <li class="list-group-item"><strong>Email:</strong>{{ user.email }}</li>
-                            <li class="list-group-item"><strong>Phone:</strong> +91 9876543210</li>
-                            <li class="list-group-item"><strong>Location:</strong> Mumbai, India</li>
+                            <li class="list-group-item"><strong>Phone:</strong> {{ user.profile.phone_number }}</li>
+                            <li class="list-group-item"><strong>Location:</strong> {{ user.profile.location }}</li>
                             <li class="list-group-item"><strong>Joined:</strong> {{ user.date_joined|date:"M Y" }} </li>
                         </ul>
                         <button class="btn btn-danger mt-3">
@@ -62,15 +66,50 @@
 {% endblock home_content %}
 {% block extrajs %}
 <script>
-    document.getElementById("imageUpload").addEventListener("change", function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById("profileImage").src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+document.getElementById("imageUpload").addEventListener("change", function(event) {
+    let file = event.target.files[0];
+    if (file) {
+        let formData = new FormData();
+        formData.append("profile_picture", file);
+        
+        fetch("{% url 'user:upload_profile_picture' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("profileImage").src = data.image_url;  // Update profile image dynamically
+                
+                // Show success message using SweetAlert
+                Swal.fire({
+                    icon: "success",
+                    title: "Profile Updated!",
+                    text: "Your profile picture has been updated successfully.",
+                    timer: 2000,  // Auto close after 2 seconds
+                    showConfirmButton: false
+                });
+
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Upload Failed!",
+                    text: "Error uploading profile picture. Please try again."
+                });
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Something went wrong!",
+                text: "Could not upload profile picture. Please try again later."
+            });
+        });
+    }
+});
 </script>
 {% endblock extrajs %}

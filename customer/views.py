@@ -12,15 +12,19 @@ from django.utils.encoding import force_bytes
 from django.urls import reverse, reverse_lazy
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.hashers import make_password
-
+from .models import UserProfile
+from django.http import JsonResponse
 
 Customer = get_user_model()
+
 def register(request):
     if request.method == "POST":
         name = request.POST["name"]  # Get full name from form
         email = request.POST["email"]
+        phone_number = request.POST.get("phone_number", "")  # Get phone number from form
+        location = request.POST.get("location", "")  # Get location from form
 
-        if User.objects.filter(email=email).exists():
+        if Customer.objects.filter(email=email).exists():
             messages.error(request, "Email already in use!")
             return redirect("register")
 
@@ -29,20 +33,22 @@ def register(request):
         first_name = name_parts[0]
         last_name = name_parts[1] if len(name_parts) > 1 else ""  # Handle cases where there's only a first name
 
-        default_password = "123456"  # Default password
-
-        # Create user with email as username
-        user = User.objects.create_user(username=email, email=email, password=default_password)
+        # Create user with is_active=False (User needs admin approval)
+        user = Customer.objects.create_user(username=email, email=email, password="")  # No password initially
         user.first_name = first_name
         user.last_name = last_name
+        user.is_active = False  # User is inactive until admin approval
         user.save()
 
-        # Send email with login credentials
-        subject = "Welcome! Your Account Details"
-        message = f"Dear {name},\n\nYour account has been created successfully!\n\nLogin details:\nEmail: {email}\nPassword: {default_password}\n\nPlease change your password after logging in.\n\nThank you!"
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+        # Create associated UserProfile
+        UserProfile.objects.create(
+            user=user,
+            phone_number=phone_number,
+            location=location,
+            is_verified=False  # Verification status remains false initially
+        )
 
-        messages.success(request, "Registration successful! Check your email for login details.")
+        messages.success(request, "Registration successful! Admin approval is required before activation.")
         return redirect("user:login")
 
     return render(request, "default/customer/register.html")
@@ -73,7 +79,6 @@ def user_logout(request):
     messages.success(request, "Logout successful!")
     return redirect("user:login")
 
-
 def forgot_password_request(request):
     if request.method == "POST":
         email = request.POST.get("email")
@@ -100,8 +105,6 @@ def forgot_password_request(request):
             messages.error(request, "No account found with this email.")
 
     return render(request, "default/customer/forgot_password.html")
-
-
 
 def reset_password(request, uidb64, token):
     try:
@@ -131,3 +134,22 @@ def reset_password(request, uidb64, token):
         return redirect("user:login")
 
     return render(request, "default/customer/reset_password.html")
+
+@login_required
+def upload_profile_picture(request):
+    """Handles user profile picture upload and update"""
+    if request.method == "POST" and request.FILES.get("profile_picture"):
+        profile_picture = request.FILES["profile_picture"]
+        user = request.user
+        
+        # Ensure the user has a profile
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        
+        # Update profile picture
+        profile.profile_picture = profile_picture
+        profile.save()
+        
+        # Return JSON response for AJAX update
+        return JsonResponse({"success": True, "image_url": profile.profile_picture.url})
+
+    return JsonResponse({"success": False, "error": "Invalid request"}, status=400)

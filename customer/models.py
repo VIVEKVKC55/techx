@@ -3,8 +3,19 @@ from django.contrib.auth.models import User
 from catalog.models import Product
 from django.utils.timezone import now
 from datetime import timedelta
-from django.utils import timezone
+from cloudinary.models import CloudinaryField
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    profile_picture = CloudinaryField('profile_picture', blank=True, null=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    location = models.TextField(blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
 
 class Subscription(models.Model):
     PLAN_CHOICES = [
