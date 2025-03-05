@@ -17,7 +17,7 @@
                 <!-- Current Subscription Info -->
                 <div class="p-3 bg-light rounded">
                     <h5>Current Subscription</h5>
-                    <p><strong>Plan:</strong>{% if subscription.plan == "premium" %} Premium A {% elif subscription.plan == "scalable" %} Premium B {% else %} {{ subscription.plan|capfirst }} {% endif %}
+                    <p><strong>Plan:</strong>{% if subscription.plan == "premium" %} Premium (Plan A) {% elif subscription.plan == "scalable" %} Premium (Plan B) {% else %} {{ subscription.plan|capfirst }} {% endif %}
                     </p>
                     <p><strong>Duration:</strong> {{ subscription.duration_days }} days</p>
                 </div>
@@ -36,7 +36,7 @@
                                     <option value="" selected disabled>Select a Plan</option>
                                     {% for plan, durations in plan_prices.items %}
                                         <option value="{{ plan }}">
-                                            {% if plan == "premium" %} Premium A {% elif plan == "scalable" %} Premium B {% else %} {{ plan|capfirst }} {% endif %}
+                                            {% if plan == "premium" %} Premium (Plan A) {% elif plan == "scalable" %} Premium (Plan B) {% else %} {{ plan|capfirst }} {% endif %}
                                         </option>
                                     {% endfor %}
                                 </select>
@@ -64,30 +64,73 @@
 
 
                 <!-- Pricing Table -->
-                <h5>Subscription Pricing</h5>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Plan</th>
-                                <th>30 Days</th>
-                                <th>180 Days</th>
-                                <th>365 Days</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for plan, durations in plan_prices.items %}
-                            <tr>
-                                <td><strong>{% if plan == "premium" %} Premium A {% elif plan == "scalable" %} Premium B {% else %} {{ plan|capfirst }} {% endif %}</strong></td>
-                                <td>{{ durations.30|default:"-" }} AED</td>
-                                <td>{{ durations.180|default:"-" }} AED</td>
-                                <td>{{ durations.365|default:"-" }} AED</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="p-3 bg-light rounded">
+                    <h5>Subscription Pricing</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Plan</th>
+                                    <th>30 Days</th>
+                                    <th>180 Days</th>
+                                    <th>365 Days</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for plan, durations in plan_prices.items %}
+                                <tr>
+                                    <td><strong>{% if plan == "premium" %} Premium (Plan A) {% elif plan == "scalable" %} Premium (Plan B) {% else %} {{ plan|capfirst }} {% endif %}</strong></td>
+                                    <td>{{ durations.30|default:"-" }} AED</td>
+                                    <td>{{ durations.180|default:"-" }} AED</td>
+                                    <td>{{ durations.365|default:"-" }} AED</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
+                <hr class="my-4">
+                <div class="p-3 bg-light rounded">
+                <h5>Paid Subscription Plans</h5>
+                    <div class="row justify-content-center">
+                        <!-- Plan A -->
+                        <div class="col-md-6 d-flex">
+                            <div class="card shadow-sm border-primary w-100 h-100 d-flex flex-column">
+                                <div class="card-header bg-primary text-white text-center fw-bold">
+                                    Plan A – Standard Paid Subscription
+                                </div>
+                                <div class="card-body flex-grow-1">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">📦 Product Uploads: Can upload up to <strong>10 products</strong> at a time.</li>
+                                        <li class="list-group-item">🔍 Unlimited product searches & details access.</li>
+                                        <li class="list-group-item">🚀 Priority listing in search results (higher visibility).</li>
+                                        <li class="list-group-item">📊 Basic analytics (number of views & inquiries).</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- Plan B -->
+                        <div class="col-md-6 d-flex">
+                            <div class="card shadow-sm border-success w-100 h-100 d-flex flex-column">
+                                <div class="card-header bg-success text-white text-center fw-bold">
+                                    Plan B – Scalable Paid Subscription
+                                </div>
+                                <div class="card-body flex-grow-1">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">✅ Includes all features of Plan A.</li>
+                                        <li class="list-group-item">➕ Users can buy additional product slots beyond the initial 10.</li>
+                                        <li class="list-group-item">💰 Extra charge per additional slot (flexible pricing model).</li>
+                                        <li class="list-group-item">📢 Broadcast feature (send bulk notifications about new stock).</li>
+                                        <li class="list-group-item">📈 Advanced analytics (who viewed your products, demand trends, etc.).</li>
+                                        <li class="list-group-item">🎧 Dedicated customer support for faster issue resolution.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>

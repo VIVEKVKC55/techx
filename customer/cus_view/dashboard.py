@@ -83,8 +83,8 @@ class SubscriptionUpgradeView(LoginRequiredMixin, View):
             price = PLAN_PRICES[new_plan][new_duration]
 
             # Prevent downgrade to basic plan
-            if subscription.plan in ["premium", "scalable"] and new_plan == "basic":
-                messages.error(request, "Downgrade to the basic plan is not allowed.")
+            if subscription.plan in ["scalable","premium-b"] and new_plan == "premium":
+                messages.error(request, "Downgrade to the Premium plan is not allowed.")
                 return redirect("user:subscription_upgrade")
 
             # Save pending request for admin approval
