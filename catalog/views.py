@@ -29,6 +29,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         return 1  # Default limit for free users
 
     def form_valid(self, form):
+        # print('form', form.data)
         user = self.request.user
         time_threshold = now() - timedelta(hours=24)
         recent_product_count = Product.objects.filter(created_by=user, created_at__gte=time_threshold).count()

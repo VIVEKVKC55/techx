@@ -33,41 +33,6 @@
         color: #ff4d4d;
     }
 </style>
-<style>
-    .image-container {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 10px;
-    }
-    .image-item {
-        position: relative;
-        width: 100px;
-        height: 100px;
-    }
-    .remove-image {
-        position: absolute;
-        top: 2px;
-        right: 2px;
-        background: red;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        text-align: center;
-        cursor: pointer;
-    }
-    #uploadLabel {
-        width: 100px;
-        height: 100px;
-        border: 2px dashed gray;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-</style>
 {% endblock extrastyle %}
 {% block home_content %}
 
@@ -82,11 +47,16 @@
                     {% csrf_token %}
                     <!-- Custom Image Upload Box -->
                     <div class="image-upload-box text-center mb-3">
-                        <div class="image-container" id="imagePreview">
-                            <label for="imageUpload" id="uploadLabel">
+                        <div class="d-flex align-items-center gap-2 flex-wrap" id="uploadContainer">
+                            <!-- Upload button -->
+                            <label for="imageUpload" class="upload-area d-flex align-items-center justify-content-center border rounded p-2" id="uploadLabel" style="width: 100px; height: 100px; cursor: pointer;">
                                 <i class="fa fa-camera fa-2x"></i>
                             </label>
+                    
+                            <!-- Image preview section -->
+                            <div id="imagePreview" class="d-flex flex-wrap gap-2"></div>
                         </div>
+                    
                         <input type="file" id="imageUpload" name="images" accept="image/*" multiple hidden>
                         <p id="errorMsg" class="text-danger mt-2" style="display: none;">You can only upload up to 5 images.</p>
                     </div>
@@ -125,61 +95,67 @@
     <!-- hero area end -->
 {% endblock home_content %}
 {% block extrajs %}
+<!-- JavaScript for Multi-Image Upload with Max 5 Images -->
 <script>
-    document.getElementById("imageUpload").addEventListener("change", function (event) {
-        let previewContainer = document.getElementById("imagePreview");
-        let uploadLabel = document.getElementById("uploadLabel");
-        let errorMsg = document.getElementById("errorMsg");
+document.getElementById("imageUpload").addEventListener("change", function (event) {
+    let previewContainer = document.getElementById("imagePreview");
+    let uploadLabel = document.getElementById("uploadLabel");
+    let errorMsg = document.getElementById("errorMsg");
 
-        let currentImages = previewContainer.querySelectorAll(".image-item").length;
-        let newFiles = Array.from(event.target.files);
+    let currentImages = previewContainer.children.length;
+    let newFiles = Array.from(event.target.files);
 
-        if (currentImages + newFiles.length > 5) {
-            errorMsg.style.display = "block"; // Show error if exceeding limit
-            return;
-        } else {
-            errorMsg.style.display = "none"; // Hide error if within limit
-        }
-
-        newFiles.forEach((file) => {
-            if (file.type.startsWith("image/")) {
-                let reader = new FileReader();
-                reader.onload = function (e) {
-                    let div = document.createElement("div");
-                    div.classList.add("image-item");
-
-                    div.innerHTML = `
-                        <img src="${e.target.result}" class="rounded border shadow-sm w-100 h-100 object-fit-cover">
-                        <button type="button" class="remove-image">&times;</button>
-                    `;
-                    previewContainer.insertBefore(div, uploadLabel);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        updateUploadButton();
-        event.target.value = ""; // Reset file input
-    });
-
-    // Remove image functionality
-    document.getElementById("imagePreview").addEventListener("click", function (e) {
-        if (e.target.classList.contains("remove-image")) {
-            e.target.parentElement.remove(); // Remove image preview
-            updateUploadButton();
-        }
-    });
-
-    function updateUploadButton() {
-        let previewContainer = document.getElementById("imagePreview");
-        let uploadLabel = document.getElementById("uploadLabel");
-        let imageCount = previewContainer.querySelectorAll(".image-item").length;
-
-        if (imageCount >= 5) {
-            uploadLabel.style.display = "none"; // Hide button when 5 images are uploaded
-        } else {
-            uploadLabel.style.display = "flex"; // Show button in row
-        }
+    if (currentImages + newFiles.length > 5) {
+        errorMsg.style.display = "block"; // Show error if exceeding limit
+        return;
+    } else {
+        errorMsg.style.display = "none"; // Hide error if within limit
     }
+
+    newFiles.forEach((file) => {
+        if (file.type.startsWith("image/")) {
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                let div = document.createElement("div");
+                div.classList.add("position-relative", "m-2");
+                div.style.width = "100px";
+                div.style.height = "100px";
+
+                div.innerHTML = `
+                    <img src="${e.target.result}" class="rounded border shadow-sm w-100 h-100 object-fit-cover">
+                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 remove-image">
+                        &times;
+                    </button>
+                `;
+                previewContainer.appendChild(div);
+
+                // Attach event listener directly to remove button
+                div.querySelector(".remove-image").addEventListener("click", function (e) {
+                    e.stopPropagation(); // Stop bubbling
+                    div.remove(); // Remove image preview
+
+                    // Show label if images are less than 5
+                    if (document.getElementById("imagePreview").children.length < 5) {
+                        document.getElementById("uploadLabel").style.display = "block";
+                    }
+                });
+
+                // Hide label if 5 images are reached
+                if (previewContainer.children.length >= 5) {
+                    uploadLabel.style.display = "none";
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+});
+
+// Clicking only on the preview area (not the remove button) opens the file input
+document.getElementById("imagePreview").addEventListener("click", function (e) {
+    if (!e.target.classList.contains("remove-image")) {
+        document.getElementById("imageUpload").click();
+    }
+});
+
 </script>
 {% endblock extrajs %}

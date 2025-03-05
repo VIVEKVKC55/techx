@@ -111,8 +111,8 @@
 			<div class="card p-3 mb-2 shadow-sm">
 				<h5>Description</h5>
 				<p><strong>{{ product.name}}</strong></p>
-				<p>{{ product.specification}}</p>
-				<p>{{ product.description}}</p>
+				<p>{{ product.specification|safe }}</p>
+				<p>{{ product.description|safe }}</p>
 
 			</div>
 
@@ -124,7 +124,7 @@
 				<!-- <h2 class="price">₹ 4,999</h2> -->
 				<p class="text-muted">{{ product.name}}</p>
 				<div class="d-flex justify-content-between custom-text-muted text-muted small mt-auto">
-					<span class="text-start">DHARAVI, MUMBAI</span>
+					<span class="text-start">{{ product.created_by.profile.location }}</span>
 					<span class="text-end">{{ product.created_at|timesince }}</span>
 				</div>
 			</div>
@@ -149,7 +149,7 @@
 				<script>
 					document.getElementById("show-number-btn").addEventListener("click", function (event) {
 						event.preventDefault(); // Prevent page refresh
-						document.getElementById("hidden-number").textContent = "+91 98765 43210"; // Replace with actual number
+						document.getElementById("hidden-number").textContent = "{{ product.created_by.profile.phone_number }}"; // Replace with actual number
 						this.style.display = "none"; // Hide the "Show number" button
 					});
 				</script>
@@ -159,7 +159,7 @@
 			<!-- Location Section -->
 			<div class="card mt-2 p-2 shadow-sm">
 				<h6 class="mb-0 text-muted">Posted in</h6>
-				<p class="mb-0 fw-bold">Dadar East, Mumbai, Maharashtra</p>
+				<p class="mb-0 fw-bold">{{ product.created_by.profile.location }}</p>
 			</div>
 			<div class="card p-3 mt-2 shadow-sm">
 				<iframe src="https://maps.google.com/maps?q=Chandpur,UP&t=&z=13&ie=UTF8&iwloc=&output=embed"
