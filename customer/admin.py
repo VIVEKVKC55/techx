@@ -105,7 +105,7 @@ admin.site.register(User, CustomUserAdmin)
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ("user", "plan", "duration_days", "is_approved", "pending_plan", "start_date", "end_date", "approve_button", "reject_button")
+    list_display = ("user", "plan", "duration_days", "is_approved", "pending_plan", 'pending_duration', "start_date", "end_date", "approve_button", "reject_button")
     list_filter = ("plan", "is_approved")
 
     def get_urls(self):
