@@ -20,8 +20,8 @@ class UserProfile(models.Model):
 class Subscription(models.Model):
     PLAN_CHOICES = [
         ('basic', 'Basic'),
-        ('premium', 'Premium-A'),
-        ('scalable', 'Premium-B'),
+        ('premium', 'Premium (Plan A)'),
+        ('scalable', 'Premium (Plan B)'),
     ]
     
     DURATION_CHOICES = [

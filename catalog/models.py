@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from cloudinary.models import CloudinaryField
+from tinymce.models import HTMLField
 
 class Category(models.Model):
     """This is the Category Django Model for the pim_category database table."""
@@ -55,8 +56,8 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     # slug = models.SlugField(max_length=250, unique=True, blank=True)
     brand = models.CharField(max_length=255)
-    specification = models.TextField()
-    description = models.TextField()
+    specification = HTMLField()
+    description = HTMLField()
     is_active = models.BooleanField(default=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
