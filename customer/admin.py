@@ -6,7 +6,7 @@ from django.utils.timezone import now
 from datetime import timedelta
 from django.utils.html import format_html
 from django.urls import path
-from .models import Subscription, UserProfile
+from .models import Subscription, UserProfile, SubscriptionPlan, PlanType, SubscriptionDuration
 from django.conf import settings
 from django.contrib.auth.admin import UserAdmin as DefaultUserAdmin
 
@@ -103,9 +103,14 @@ admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 
 
+from django.utils.safestring import mark_safe
 
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ("user", "plan", "duration_days", "is_approved", "pending_plan", 'pending_duration', "start_date", "end_date", "approve_button", "reject_button")
+    list_display = (
+        "user", "approve_button", "amount_paid", "plan", "duration_days", "is_approved", 
+        "pending_plan", "pending_duration", "start_date", "end_date", 
+        "reject_button"
+    )
     list_filter = ("plan", "is_approved")
 
     def get_urls(self):
@@ -118,26 +123,43 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
     def approve_subscription(self, request, subscription_id):
         subscription = get_object_or_404(Subscription, id=subscription_id)
-        if subscription.pending_plan:
-            subscription.plan = subscription.pending_plan
-            subscription.duration_days = subscription.pending_duration
+
+        if subscription.amount_paid <= 0:  # ✅ Check if payment is collected
+            messages.error(request, "Cannot approve. Payment not received yet.")
+            return redirect('/admin/customer/subscription/')
+
+        if subscription.pending_plan and subscription.pending_duration:
+            plan_type = subscription.pending_plan
+            duration = subscription.pending_duration
+
+            try:
+                subscription_plan = SubscriptionPlan.objects.get(plan_type=plan_type, duration_days=duration)
+            except SubscriptionPlan.DoesNotExist:
+                messages.error(request, "The selected plan-duration combination is invalid.")
+                return redirect('/admin/customer/subscription/')
+
+            subscription.plan = plan_type
+            subscription.duration_days = duration
             subscription.start_date = now()
-            subscription.end_date = now() + timedelta(days=subscription.pending_duration)
+            subscription.end_date = now() + timedelta(days=duration.duration_days)
             subscription.is_approved = True
             
+            # Clear pending request fields
             subscription.pending_plan = None
             subscription.pending_duration = None
             subscription.save()
 
             send_mail(
                 "Subscription Approved",
-                f"Dear {subscription.user.username},\n\nYour subscription has been upgraded to {subscription.plan} for {subscription.duration_days} days.\n\nBest Regards,\nSupport Team",
+                f"Dear {subscription.user.username},\n\n"
+                f"Your subscription has been upgraded to {plan_type.name} for {duration.duration_days} days at ${subscription_plan.price}.\n\n"
+                "Best Regards,\nSupport Team",
                 "support@example.com",
                 [subscription.user.email],
                 fail_silently=True,
             )
 
-            messages.success(request, "Subscription approved successfully.")
+            messages.success(request, f"Subscription for {subscription.user.username} approved successfully!")
         return redirect('/admin/customer/subscription/')
 
     def reject_subscription(self, request, subscription_id):
@@ -150,26 +172,61 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
             send_mail(
                 "Subscription Upgrade Rejected",
-                f"Dear {subscription.user.username},\n\nYour subscription upgrade request was rejected.\n\nBest Regards,\nSupport Team",
+                f"Dear {subscription.user.username},\n\n"
+                "Your subscription upgrade request was rejected.\n\n"
+                "Best Regards,\nSupport Team",
                 "support@example.com",
                 [subscription.user.email],
                 fail_silently=True,
             )
 
-            messages.warning(request, "Subscription upgrade request rejected.")
+            messages.warning(request, f"Subscription for {subscription.user.username} rejected.")
         return redirect('/admin/customer/subscription/')
 
     def approve_button(self, obj):
         if obj.pending_plan:
-            return format_html('<a class="button" href="{}">Approve</a>', f"/admin/customer/subscription/approve/{obj.id}/")
+            return mark_safe(
+                f'<button class="button approve-btn" data-id="{obj.id}" data-amount="{obj.amount_paid}">Approve</button>'
+            )
         return "No pending request"
 
     def reject_button(self, obj):
         if obj.pending_plan:
-            return format_html('<a class="button" style="color: red;" href="{}">Reject</a>', f"/admin/customer/subscription/reject/{obj.id}/")
+            return mark_safe(
+                f'<button class="button reject-btn" style="color: red;" data-id="{obj.id}">Reject</button>'
+            )
         return "No pending request"
 
     approve_button.short_description = "Approve"
     reject_button.short_description = "Reject"
 
+    class Media:
+        js = ("admin/js/sweetalert2.min.js", "admin/js/subscription_actions.js")  # ✅ Load JavaScript for SweetAlert
+
 admin.site.register(Subscription, SubscriptionAdmin)
+
+
+
+
+@admin.register(PlanType)
+class PlanTypeAdmin(admin.ModelAdmin):
+    """Admin configuration for subscription plan types."""
+    list_display = ("name", "max_products_per_day", "base_slots", "max_product_views_per_day")
+    search_fields = ("name",)
+    ordering = ("name",)
+
+
+@admin.register(SubscriptionDuration)
+class SubscriptionDurationAdmin(admin.ModelAdmin):
+    """Admin configuration for subscription durations."""
+    list_display = ("duration_days",)
+    ordering = ("duration_days",)
+
+
+@admin.register(SubscriptionPlan)
+class SubscriptionPlanAdmin(admin.ModelAdmin):
+    """Admin configuration for subscription plans (mapping plan type & duration)."""
+    list_display = ("plan_type", "duration_days", "price")
+    list_filter = ("plan_type", "duration_days")
+    search_fields = ("plan_type__name",)
+    ordering = ("plan_type", "duration_days")

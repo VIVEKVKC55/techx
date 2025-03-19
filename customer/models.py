@@ -16,57 +16,75 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
+    
+class PlanType(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=50, unique=True)  # e.g., 'Premium A', 'Premium B'
+    max_products_per_day = models.PositiveIntegerField(default=1)  # Default 1 for free users
+    base_slots = models.PositiveIntegerField(default=0)  # Extra slots for scalable users
+    max_product_views_per_day = models.PositiveIntegerField(default=5)  # Default 5 for free users (∞ for premium)
+
+    def __str__(self):
+        return self.name
+
+
+class SubscriptionDuration(models.Model):
+    duration_days = models.PositiveIntegerField(unique=True)  # e.g., 30, 180, 365
+
+    def __str__(self):
+        return f"{self.duration_days} Days"
+    
+
+class SubscriptionPlan(models.Model):
+    plan_type = models.ForeignKey(PlanType, on_delete=models.CASCADE)  # Dynamic plan type
+    duration_days = models.ForeignKey(SubscriptionDuration, on_delete=models.CASCADE)  # Dynamic duration
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.plan_type.name} - {self.duration_days.duration_days} Days - ${self.price}"
+
 
 class Subscription(models.Model):
-    PLAN_CHOICES = [
-        ('basic', 'Basic'),
-        ('premium', 'Premium (Plan A)'),
-        ('scalable', 'Premium (Plan B)'),
-    ]
-    
-    DURATION_CHOICES = [
-        (30, "1 Month"),
-        (180, "6 Months"),
-        (365, "1 Year"),
-    ]
-
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    plan = models.CharField(max_length=10, choices=PLAN_CHOICES, default='basic')
-    duration_days = models.IntegerField(choices=DURATION_CHOICES, blank=True, null=True)  # Only for premium/scalable
+    plan = models.ForeignKey(PlanType, on_delete=models.SET_NULL, null=True, blank=True)  # Active plan
+    duration_days = models.ForeignKey(SubscriptionDuration, on_delete=models.SET_NULL, null=True, blank=True)  # Active duration
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     extra_slots = models.PositiveIntegerField(default=0)  # Purchased slots
     start_date = models.DateTimeField(default=now)
     end_date = models.DateTimeField(blank=True, null=True)  # Nullable for Basic plan
-    is_approved = models.BooleanField(default=False)  # NEW: Approval status
-    pending_plan = models.CharField(max_length=10, blank=True, null=True)  # NEW: Requested plan
-    pending_duration = models.IntegerField(blank=True, null=True)  # NEW: Requested duration
+    is_approved = models.BooleanField(default=False)  # Approval status
+    
+    # ✅ Store pending upgrade request properly
+    pending_plan = models.ForeignKey(PlanType, on_delete=models.SET_NULL, null=True, blank=True, related_name="pending_subscriptions")
+    pending_duration = models.ForeignKey(SubscriptionDuration, on_delete=models.SET_NULL, null=True, blank=True, related_name="pending_subscriptions")
 
     def save(self, *args, **kwargs):
-        """Only apply changes if the subscription is approved."""
-        if self.is_approved and self.pending_plan:
+        """Apply pending upgrades only when approved."""
+        if self.is_approved and self.pending_plan and self.pending_duration:
             self.plan = self.pending_plan
             self.duration_days = self.pending_duration
             self.start_date = now()
-            self.end_date = now() + timedelta(days=self.duration_days or 30)  # Default to 1 month
+            self.end_date = now() + timedelta(days=self.duration_days.duration_days)  # Get actual days from model
             self.pending_plan = None  # Clear pending request
             self.pending_duration = None
         super().save(*args, **kwargs)
 
     def is_active(self):
         """Check if the subscription is still valid and approved."""
-        if self.plan == 'basic' or self.end_date is None:
+        if not self.plan:
             return True  # Basic users are always active
-        return self.end_date >= now() and self.is_approved  # Only active if approved
+        return self.end_date is None or self.end_date >= now()  # Check expiration
 
     def remaining_days(self):
         """Calculate remaining days if end_date exists."""
         if self.end_date:
-            now_time = now()
-            delta = (self.end_date - now_time).days
+            delta = (self.end_date - now()).days
             return max(delta, 0)  # Avoid negative values
         return "Unlimited"
 
     def __str__(self):
-        return f"{self.user.username} - {self.get_plan_display()} ({self.get_duration_days_display() if self.duration_days else 'Free'})"
+        return f"{self.user.username} - {self.plan.name if self.plan else 'Basic'} ({self.duration_days.duration_days if self.duration_days else 'Free'})"
+
 
 
 class ProductView(models.Model):

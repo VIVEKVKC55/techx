@@ -1,17 +1,9 @@
 from django import forms
-from .models import Subscription
-
-# Define Subscription Pricing
-PLAN_PRICES = {
-    "premium": {30: 100, 180: 550, 365: 1000},  # Prices for Premium-A
-    "scalable": {30: 120, 180: 650, 365: 1200},  # Prices for Premium-B
-}
-PLAN_CHOICE = [("premium", "Premium A"), ("scalable", "Premium B")]
-DURATION_CHOICE = [(30, "30 Days"), (180, "180 Days"), (365, "365 Days")]
+from .models import Subscription, PlanType, SubscriptionDuration, SubscriptionPlan
 
 class SubscriptionUpgradeForm(forms.ModelForm):
-    plan = forms.ChoiceField(choices=PLAN_CHOICE, required=True)
-    duration = forms.ChoiceField(choices=DURATION_CHOICE, required=True)
+    plan = forms.ModelChoiceField(queryset=PlanType.objects.all(), required=True, label="Plan Type")
+    duration = forms.ModelChoiceField(queryset=SubscriptionDuration.objects.all(), required=True, label="Subscription Duration")
 
     class Meta:
         model = Subscription
@@ -20,13 +12,13 @@ class SubscriptionUpgradeForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         plan = cleaned_data.get("plan")
-        duration = int(cleaned_data.get("duration", 30))  # Default to 30 days if empty
+        duration = cleaned_data.get("duration")
 
-        # Validate duration against the selected plan
-        if plan not in PLAN_PRICES:
-            raise forms.ValidationError("Invalid subscription plan selected.")
+        if not plan or not duration:
+            raise forms.ValidationError("Both plan type and duration are required.")
 
-        if duration not in PLAN_PRICES[plan]:
-            raise forms.ValidationError("Invalid duration selected.")
+        # Validate if the selected plan-duration combination exists in SubscriptionPlan
+        if not SubscriptionPlan.objects.filter(plan_type=plan, duration_days=duration).exists():
+            raise forms.ValidationError("Invalid plan and duration combination.")
 
         return cleaned_data

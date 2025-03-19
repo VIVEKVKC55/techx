@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %} Upgrade Subscription {% endblock %}
-{% block canonical_url %}{{request.scheme}}://{{request.META.HTTP_HOST}}{{request.path}}{% endblock %}
+{% block canonical_url %}{{ request.scheme }}://{{ request.META.HTTP_HOST }}{{ request.path }}{% endblock %}
 
 {% block home_content %}
     <!-- Sidebar -->
@@ -14,18 +14,28 @@
 
             <div class="card shadow-lg border-0 rounded-4 p-4">
                 
-                <!-- Current Subscription Info -->
+                <!-- ✅ Current Subscription Section -->
                 <div class="p-3 bg-light rounded">
                     <h5>Current Subscription</h5>
-                    <p><strong>Plan:</strong>{% if subscription.plan == "premium" %} Premium (Plan A) {% elif subscription.plan == "scalable" %} Premium (Plan B) {% else %} {{ subscription.plan|capfirst }} {% endif %}
-                    </p>
-                    <p><strong>Duration:</strong> {{ subscription.duration_days }} days</p>
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>Plan:</strong> {{ subscription.plan.name }}</li>
+                        <li class="list-group-item"><strong>Status:</strong> 
+                            {% if subscription.is_approved %} ✅ Active {% else %} ⏳ Pending Approval {% endif %}
+                        </li>
+                        <li class="list-group-item"><strong>Start Date:</strong> {{ subscription.start_date }}</li>
+                        <li class="list-group-item"><strong>End Date:</strong> 
+                            {% if subscription.end_date %} {{ subscription.end_date }} {% else %} Unlimited {% endif %}
+                        </li>
+                        <li class="list-group-item"><strong>Extra Slots:</strong> {{ subscription.extra_slots }}</li>
+                    </ul>
                 </div>
 
                 <hr class="my-4">
+
+                <!-- ✅ Upgrade Subscription Section -->
                 <div class="p-3 bg-light rounded">
                     <h5>Upgrade Your Subscription</h5>
-                    <form method="post" class="needs-validation" novalidate>
+                    <form method="post" id="upgradeForm" class="needs-validation" novalidate>
                         {% csrf_token %}
                         
                         <div class="row g-3">
@@ -33,11 +43,9 @@
                             <div class="col-md-6">
                                 <label for="planSelect" class="form-label">Select Plan</label>
                                 <select id="planSelect" name="plan" class="form-select" required>
-                                    <option value="" selected disabled>Select a Plan</option>
-                                    {% for plan, durations in plan_prices.items %}
-                                        <option value="{{ plan }}">
-                                            {% if plan == "premium" %} Premium (Plan A) {% elif plan == "scalable" %} Premium (Plan B) {% else %} {{ plan|capfirst }} {% endif %}
-                                        </option>
+                                    <option value="">-- Select Plan --</option>
+                                    {% for plan in plans %}
+                                        <option value="{{ plan.id }}">{{ plan.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -46,7 +54,10 @@
                             <div class="col-md-6">
                                 <label for="durationSelect" class="form-label">Select Duration</label>
                                 <select id="durationSelect" name="duration" class="form-select" required>
-                                    <option value="" selected disabled>Select Duration</option>
+                                    <option value="">-- Select Duration --</option>
+                                    {% for duration in durations %}
+                                        <option value="{{ duration.id }}">{{ duration.duration_days }} Days</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -59,11 +70,10 @@
                         <button type="submit" class="btn btn-danger mt-3">Upgrade Plan</button>
                     </form>
                 </div>
-                
+
                 <hr class="my-4">
 
-
-                <!-- Pricing Table -->
+                <!-- ✅ Subscription Pricing Table -->
                 <div class="p-3 bg-light rounded">
                     <h5>Subscription Pricing</h5>
                     <div class="table-responsive">
@@ -71,19 +81,19 @@
                             <thead class="table-dark">
                                 <tr>
                                     <th>Plan</th>
-                                    <th>30 Days</th>
-                                    <th>180 Days</th>
-                                    <th>365 Days</th>
+                                    {% for duration in durations %}
+                                        <th>{{ duration.duration_days }} Days</th>
+                                    {% endfor %}
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for plan, durations in plan_prices.items %}
-                                <tr>
-                                    <td><strong>{% if plan == "premium" %} Premium (Plan A) {% elif plan == "scalable" %} Premium (Plan B) {% else %} {{ plan|capfirst }} {% endif %}</strong></td>
-                                    <td>{{ durations.30|default:"-" }} AED</td>
-                                    <td>{{ durations.180|default:"-" }} AED</td>
-                                    <td>{{ durations.365|default:"-" }} AED</td>
-                                </tr>
+                                    <tr>
+                                        <td><strong>{{ plan }}</strong></td>
+                                        {% for duration_days, price in durations.items %}
+                                            <td>{{ price|default:"-" }} AED</td>
+                                        {% endfor %}
+                                    </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -138,33 +148,34 @@
 
 {% block extrajs %}
 <script>
-    const planPrices = {{ plan_prices|safe }};  // Inject pricing dictionary
-    const planSelect = document.getElementById("planSelect");
-    const durationSelect = document.getElementById("durationSelect");
-    const priceDisplay = document.getElementById("priceDisplay");
-
-    // Function to update duration options dynamically
-    function updateDurations() {
-        durationSelect.innerHTML = '<option value="" selected disabled>Select Duration</option>'; // Reset options
-        const plan = planSelect.value;
-
-        if (plan in planPrices) {
-            for (const duration in planPrices[plan]) {
-                durationSelect.innerHTML += `<option value="${duration}">${duration} Days</option>`;
+    $(document).ready(function () {
+        $("#planSelect, #durationSelect").change(function () {
+            var planId = $("#planSelect").val();
+            var durationId = $("#durationSelect").val();
+    
+            if (planId && durationId) {
+                $(".loader-cont").show(); // ✅ Show loader
+    
+                $.ajax({
+                    url: "{% url 'user:get-plan-price' %}", // ✅ Correct URL
+                    type: "GET",
+                    data: { plan_id: planId, duration_id: durationId },
+                    success: function (response) {
+                        if (response.price) {
+                            $("#priceDisplay").text(response.price + " AED");
+                        } else {
+                            $("#priceDisplay").text("Not Available");
+                        }
+                    },
+                    error: function () {
+                        $("#priceDisplay").text("Error fetching price");
+                    },
+                    complete: function () {
+                        $(".loader-cont").hide(); // ✅ Hide loader after request completes
+                    }
+                });
             }
-        }
-        updatePrice(); // Update price display
-    }
-
-    // Function to update price based on selection
-    function updatePrice() {
-        const plan = planSelect.value;
-        const duration = durationSelect.value;
-        priceDisplay.textContent = duration ? `${planPrices[plan][duration]} AED` : "0 AED";
-    }
-
-    // Event listeners
-    planSelect.addEventListener("change", updateDurations);
-    durationSelect.addEventListener("change", updatePrice);
+        });
+    });
 </script>
 {% endblock extrajs %}

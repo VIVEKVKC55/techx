@@ -20,12 +20,15 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy("user:user-products")  # Update with the actual URL name
 
     def get_max_products(self, user):
-        """Returns the max number of products a user can add in 24 hours."""
-        if hasattr(user, 'subscription'):
-            if user.subscription.plan == "scalable":
-                return user.subscription.extra_slots + 10  # Base 10 + Purchased Slots
-            elif user.subscription.plan == "premium":
-                return 10  # 10 products per day for premium users
+        """Returns the max number of products a user can add in 24 hours based on their plan."""
+        if hasattr(user, 'subscription') and user.subscription.plan:
+            plan = user.subscription.plan
+            max_limit = plan.max_products_per_day  # Fetch limit from PlanType
+
+            # ✅ Extra slots apply to all plans
+            max_limit += user.subscription.extra_slots  
+
+            return max_limit  # Final dynamic limit
         return 1  # Default limit for free users
 
     def form_valid(self, form):
@@ -100,9 +103,12 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
         return Product.objects.filter(is_active=True)
 
     def get_max_views(self, user):
-        """Returns the max number of product views allowed per day based on subscription."""
-        if hasattr(user, 'subscription') and user.subscription.plan in ["premium", "scalable"]:
-            return float('inf')  # Unlimited for premium/scalable users
+        """Returns the max number of product views allowed per day based on the user's plan."""
+        if hasattr(user, 'subscription') and user.subscription.plan:
+            plan = user.subscription.plan
+            max_views = plan.max_product_views_per_day  # Get from PlanType
+
+            return float('inf') if max_views == 0 else max_views  # If max_views = 0, allow unlimited
         return 5  # Default limit for free users
 
     def get(self, request, *args, **kwargs):
@@ -120,7 +126,7 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
             # If limit is reached, return error JSON if AJAX, otherwise show message
             if recent_views_count >= max_views:
                 if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                    return JsonResponse({"error": "You have reached your daily limit of product views."}, status=403)
+                    return JsonResponse({"error": f"You have reached your daily limit of {max_views} product views."}, status=403)
                 messages.error(request, f"You have reached your daily limit of {max_views} product views.")
                 return self.render_to_response(self.get_context_data())  # Render the same page
 

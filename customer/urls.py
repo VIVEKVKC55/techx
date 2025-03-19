@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import register, user_login, user_logout,forgot_password_request,reset_password,upload_profile_picture
-from .cus_view.dashboard import ProfileView, UserProductListView, CustomPasswordChangeView, UserViewedProductsView, UsersWhoViewedMyProductsView, SubscriptionUpgradeView
+from .cus_view.dashboard import get_plan_price, ProfileView, UserProductListView, CustomPasswordChangeView, UserViewedProductsView, UsersWhoViewedMyProductsView, SubscriptionUpgradeView
 
 
 app_name="user"
@@ -18,4 +18,7 @@ urlpatterns = [
     path("my-viewed-products/", UserViewedProductsView.as_view(), name="my-viewed-products"),
     path("users-who-viewed-my-products/", UsersWhoViewedMyProductsView.as_view(), name="users-who-viewed-my-products"),
     path("plan-upgrade/", SubscriptionUpgradeView.as_view(), name="subscription_upgrade"),
+
+    # AJAX URL
+    path("get-plan-price/", get_plan_price, name="get-plan-price"),
 ]
