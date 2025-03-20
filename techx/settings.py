@@ -98,7 +98,6 @@ DATABASES = {
         "PASSWORD": os.getenv("DATABASE_PASSWORD"),
         "HOST": os.getenv("DATABASE_HOST"),
         "PORT": os.getenv("DATABASE_PORT"),
-        'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
 
