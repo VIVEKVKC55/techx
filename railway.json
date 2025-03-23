@@ -1,6 +1,0 @@
-{
-    "build": {
-        "builder": "nixpacks"
-    },
-    "start": "gunicorn techx.wsgi --bind 0.0.0.0:8000"
-}

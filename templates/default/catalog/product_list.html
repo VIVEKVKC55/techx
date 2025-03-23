@@ -123,7 +123,7 @@
                             </span>
                             <p class="mt-2 text-dark">{{ product.name}}</p>
                             <div class="d-flex justify-content-between custom-text-muted text-muted small mt-auto">
-                                <span class="text-start">DADAR WEST, MUMBAI</span>
+                                <span class="text-start">{{ product.created_by.profile.location|capfirst }}</span>
                                 <span class="text-end">{{ product.created_at|timesince }}</span>
                             </div>
                         </div>
