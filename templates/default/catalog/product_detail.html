@@ -162,7 +162,8 @@
 				<p class="mb-0 fw-bold">{{ product.created_by.profile.location }}</p>
 			</div>
 			<div class="card p-3 mt-2 shadow-sm">
-				<iframe src="https://maps.google.com/maps?q=Chandpur,UP&t=&z=13&ie=UTF8&iwloc=&output=embed"
+				<iframe id="mapFrame"
+					src="https://maps.google.com/maps?q={{ product.created_by.profile.location }}&t=&z=13&ie=UTF8&iwloc=&output=embed"
 					width="100%" height="200" style="border:0;" allowfullscreen></iframe>
 			</div>
 		</div>
