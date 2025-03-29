@@ -79,6 +79,7 @@ class SubscriptionUpgradeView(LoginRequiredMixin, View):
 
         # Fetch all plan types except 'Basic' (ID=1)
         plans = PlanType.objects.exclude(id=1)
+        premium_plans = plans.get(name="Premium (Plan A)")
 
         # Fetch all available subscription durations
         durations = SubscriptionDuration.objects.all()
@@ -94,6 +95,7 @@ class SubscriptionUpgradeView(LoginRequiredMixin, View):
         context = {
             "subscription": subscription,
             "plans": plans,
+            "premium_plans": premium_plans,
             "durations": durations,
             "plan_prices": plan_prices,
         }
